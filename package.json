@@ -1,0 +1,27 @@
+{
+  "name": "node-devolo",
+  "version": "0.1.0",
+  "description": "Devolo Home Control (reverse-engineered). Control your favorite home control devices via this Node.js API.",
+  "author": "Kevin Dietrich",
+  "license": "MIT",
+  "main": "dist/Devolo.js",
+  "keywords": [
+    "devolo",
+    "home control"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kdietrich/node-devolo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kdietrich/node-devolo/issues"
+  },
+  "homepage": "https://github.com/kdietrich/node-devolo#readme",
+  "engines": {
+    "node": ">=0.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^7.0.5",
+    "typescript": "^2.1.6"
+  }
+}

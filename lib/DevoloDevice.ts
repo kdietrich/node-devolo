@@ -1,0 +1,157 @@
+import { DevoloAPI } from './DevoloApi';
+import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch } from './DevoloSensor';
+
+export abstract class Device {
+
+    id: string;
+    name: string;
+    model: string;
+    icon: string;
+    zoneId: string;
+    zone: string;
+    batteryLevel: number;
+    batteryLow: boolean;
+    lastActivity: number;
+    sensors: Sensor[];
+
+    setParams(id: string, name: string, model: string, icon: string, zoneId: string, zone: string, batteryLevel: number, batteryLow: boolean, lastActivity: number, sensors: Sensor[]) {
+        this.id = id;
+        this.name = name;
+        this.model = model;
+        this.icon = icon;
+        this.zoneId = zoneId;
+        this.zone = zone;
+        this.batteryLevel = batteryLevel;
+        this.batteryLow = batteryLow;
+        this.lastActivity = lastActivity;
+        this.sensors = sensors;
+    }
+
+    turnOn(callback: (err?:string) => void) {
+//        console.log("turnon");
+        this.setState(1, callback);
+    }
+
+    turnOff(callback: (err:string) => void) {
+//        console.log("turnoff");
+        this.setState(0, callback);
+    }
+
+    setState(state: number, callback: (err:string) => void) {
+//        console.log("setState");
+        var sendViaAPI: boolean = false;
+        var sensor: BinarySensor = this.getSensor(BinarySensor) as BinarySensor;
+        if(!sensor) {
+            sensor = this.getSensor(BinarySwitch) as BinarySensor;
+            if(!sensor)
+                callback('Device has no suitable sensor.');
+            sendViaAPI = true;
+        }
+        if(sensor.state === state) {
+            callback(null); return;
+        }
+        if(sendViaAPI) {
+            var operation = (state==0) ? 'turnOff' : 'turnOn';
+            var api:DevoloAPI = DevoloAPI.getInstance();
+            api.invokeOperation(sensor, operation, function(err) {
+                if(err) {
+                    callback(err); return;
+                }
+                sensor.state = state;
+                callback(null);
+            });
+        }
+        else {
+            sensor.state = state;
+            callback(null);
+        }
+    }
+
+    getState() : number {
+//        console.log("getState");
+        var sensor: BinarySensor = this.getSensor(BinarySensor) as BinarySensor;
+        if(!sensor) {
+            sensor = this.getSensor(BinarySwitch) as BinarySensor;
+            if(!sensor)
+                throw new Error('Device has no suitable sensor.');
+        }
+        return sensor.state;
+    }
+
+    getValue(type:string) : number {
+//        console.log("getValue");
+        var sensor: MultiLevelSensor = this.getSensor(MultiLevelSensor, type) as MultiLevelSensor;
+        if(!sensor)
+            throw new Error('Device has no suitable sensor.');
+        return sensor.value;
+    }
+
+    setValue(type: string, value: number) : void {
+//        console.log("setValue");
+        var sensor: MultiLevelSensor = this.getSensor(MultiLevelSensor, type) as MultiLevelSensor;
+        if(!sensor)
+            throw new Error('Device has no suitable sensor.');
+        sensor.value = value;
+    }
+
+    getCurrentValue(type:string) : number {
+//        console.log("getCurrentValue");
+        var sensor: MeterSensor = this.getSensor(MeterSensor, type) as MeterSensor;
+        if(!sensor)
+            throw new Error('Device has no suitable sensor.');
+        return sensor.currentValue;
+    }
+
+    getTotalValue(type:string) : number {
+//        console.log("getTotalValue");
+        var sensor: MeterSensor = this.getSensor(MeterSensor, type) as MeterSensor;
+        if(!sensor)
+            throw new Error('Device has no suitable sensor.');
+        return sensor.totalValue;
+    }
+
+    getSinceTime(type:string) : number {
+//        console.log("getSinceTime");
+        var sensor: MeterSensor = this.getSensor(MeterSensor, type) as MeterSensor;
+        if(!sensor)
+            throw new Error('Device has no suitable sensor.');
+        return sensor.sinceTime;
+    }
+
+    getBatteryLevel() : number {
+        return this.batteryLevel;
+    }
+
+    setBatteryLevel(batteryLevel: number) : void {
+        this.batteryLevel = batteryLevel;
+    }
+
+    getBatteryLow() : boolean {
+        return this.batteryLow;
+    }
+
+    setBatteryLow(batteryLow: boolean) : void {
+        this.batteryLow = batteryLow;
+    }
+
+    private getSensor(classs: any, type?: string) : Sensor {
+        //console.log("hasSensor..");
+        for(var i=0; i<this.sensors.length; i++) {
+            let instance: any = this.sensors[i].constructor;
+            if(instance.name == classs.name) {
+        //        console.log("..true");
+                if(!type || type == this.sensors[i].type)
+                    return this.sensors[i];
+            }
+        }
+        //console.log("..false");
+        return null;
+    }
+}
+
+export class SwitchMeterDevice extends Device { }
+export class DoorWindowDevice extends Device { }
+export class HumidityDevice extends Device { }
+export class FloodDevice extends Device { }
+export class MotionDevice extends Device { }
+export class SirenDevice extends Device { }
