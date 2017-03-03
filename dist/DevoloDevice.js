@@ -23,13 +23,14 @@ var Device = (function () {
     };
     Device.prototype.turnOn = function (callback) {
         //        console.log("turnon");
-        this.setState(1, callback);
+        this.setState(1, callback, true);
     };
     Device.prototype.turnOff = function (callback) {
         //        console.log("turnoff");
-        this.setState(0, callback);
+        this.setState(0, callback, true);
     };
-    Device.prototype.setState = function (state, callback) {
+    Device.prototype.setState = function (state, callback, useAPI) {
+        if (useAPI === void 0) { useAPI = false; }
         //        console.log("setState");
         var sendViaAPI = false;
         var sensor = this.getSensor(DevoloSensor_1.BinarySensor);
@@ -37,7 +38,7 @@ var Device = (function () {
             sensor = this.getSensor(DevoloSensor_1.BinarySwitch);
             if (!sensor)
                 callback('Device has no suitable sensor.');
-            sendViaAPI = true;
+            sendViaAPI = useAPI;
         }
         if (sensor.state === state) {
             callback(null);

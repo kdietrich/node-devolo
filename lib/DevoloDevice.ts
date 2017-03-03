@@ -29,15 +29,15 @@ export abstract class Device {
 
     turnOn(callback: (err?:string) => void) {
 //        console.log("turnon");
-        this.setState(1, callback);
+        this.setState(1, callback, true);
     }
 
     turnOff(callback: (err:string) => void) {
 //        console.log("turnoff");
-        this.setState(0, callback);
+        this.setState(0, callback, true);
     }
 
-    setState(state: number, callback: (err:string) => void) {
+    setState(state: number, callback: (err:string) => void, useAPI: boolean=false) {
 //        console.log("setState");
         var sendViaAPI: boolean = false;
         var sensor: BinarySensor = this.getSensor(BinarySensor) as BinarySensor;
@@ -45,7 +45,7 @@ export abstract class Device {
             sensor = this.getSensor(BinarySwitch) as BinarySensor;
             if(!sensor)
                 callback('Device has no suitable sensor.');
-            sendViaAPI = true;
+            sendViaAPI = useAPI;
         }
         if(sensor.state === state) {
             callback(null); return;
