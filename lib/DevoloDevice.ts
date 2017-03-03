@@ -102,6 +102,27 @@ export abstract class Device {
         return sensor.currentValue;
     }
 
+    setCurrentValue(type: string, currentValue: number) : void {
+        var sensor: MeterSensor = this.getSensor(MeterSensor, type) as MeterSensor;
+        if(!sensor)
+            throw new Error('Device has no suitable sensor.');
+        sensor.currentValue = currentValue;
+    }
+
+    setTotalValue(type: string, totalValue: number) : void {
+        var sensor: MeterSensor = this.getSensor(MeterSensor, type) as MeterSensor;
+        if(!sensor)
+            throw new Error('Device has no suitable sensor.');
+        sensor.totalValue = totalValue;
+    }
+
+    setSinceTime(type: string, sinceTime: number) : void {
+        var sensor: MeterSensor = this.getSensor(MeterSensor, type) as MeterSensor;
+        if(!sensor)
+            throw new Error('Device has no suitable sensor.');
+        sensor.sinceTime = sinceTime;
+    }
+
     getTotalValue(type:string) : number {
 //        console.log("getTotalValue");
         var sensor: MeterSensor = this.getSensor(MeterSensor, type) as MeterSensor;

@@ -92,6 +92,24 @@ var Device = (function () {
             throw new Error('Device has no suitable sensor.');
         return sensor.currentValue;
     };
+    Device.prototype.setCurrentValue = function (type, currentValue) {
+        var sensor = this.getSensor(DevoloSensor_1.MeterSensor, type);
+        if (!sensor)
+            throw new Error('Device has no suitable sensor.');
+        sensor.currentValue = currentValue;
+    };
+    Device.prototype.setTotalValue = function (type, totalValue) {
+        var sensor = this.getSensor(DevoloSensor_1.MeterSensor, type);
+        if (!sensor)
+            throw new Error('Device has no suitable sensor.');
+        sensor.totalValue = totalValue;
+    };
+    Device.prototype.setSinceTime = function (type, sinceTime) {
+        var sensor = this.getSensor(DevoloSensor_1.MeterSensor, type);
+        if (!sensor)
+            throw new Error('Device has no suitable sensor.');
+        sensor.sinceTime = sinceTime;
+    };
     Device.prototype.getTotalValue = function (type) {
         //        console.log("getTotalValue");
         var sensor = this.getSensor(DevoloSensor_1.MeterSensor, type);
