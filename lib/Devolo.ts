@@ -1,6 +1,6 @@
 import { DevoloOptions, Zone } from './DevoloMisc';
 import { DevoloAPI } from './DevoloApi';
-import { Device, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, SirenDevice } from './DevoloDevice';
+import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, SirenDevice } from './DevoloDevice';
 import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch } from './DevoloSensor';
 
 export class Devolo {
@@ -133,7 +133,13 @@ export class Devolo {
                 }
                 var sensors: Sensor[] = [];
                 var lastActivity = null;
-                self._api.fetchItems(item.properties.elementUIDs, function(err2, items2) {
+                var settings: DeviceSettings = new DeviceSettings();
+                var elementUIDs = item.properties.elementUIDs;
+                if(item.properties.deviceModelUID.indexOf('Wall:Plug:Switch:and:Meter') > -1) {
+                    elementUIDs.push('ps.' + item.UID);
+                }
+
+                self._api.fetchItems(elementUIDs, function(err2, items2) {
                     if(err2) {
                         callback(err2); return;
                     }
@@ -142,6 +148,9 @@ export class Devolo {
                         items2.forEach(function(item2) {
                             if(item2.UID.indexOf('LastActivity') > -1) {
                                 lastActivity = item2.properties.lastActivityTime;
+                            }
+                            else if(item2.UID.indexOf('ps.') > -1) {
+                                settings.setParams(item2.properties.remoteSwitch);
                             }
                             else {
                                 if(item2.UID.indexOf('BinarySensor') > -1 || item2.UID.indexOf('MildewSensor') > -1) {
@@ -229,7 +238,8 @@ export class Devolo {
                                  item.properties.batteryLevel as number,
                                  (item.properties.batteryLow==false),
                                  lastActivity,
-                                 sensors);
+                                 sensors,
+                                 settings);
 
                 //var device = Object.create(window[deviceClassName].prototype);
                 /*device.constructor.apply(device, item.UID,

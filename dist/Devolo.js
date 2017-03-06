@@ -134,7 +134,12 @@ var Devolo = (function () {
                 }
                 var sensors = [];
                 var lastActivity = null;
-                self._api.fetchItems(item.properties.elementUIDs, function (err2, items2) {
+                var settings = new DevoloDevice_1.DeviceSettings();
+                var elementUIDs = item.properties.elementUIDs;
+                if (item.properties.deviceModelUID.indexOf('Wall:Plug:Switch:and:Meter') > -1) {
+                    elementUIDs.push('ps.' + item.UID);
+                }
+                self._api.fetchItems(elementUIDs, function (err2, items2) {
                     if (err2) {
                         callback(err2);
                         return;
@@ -144,6 +149,9 @@ var Devolo = (function () {
                         items2.forEach(function (item2) {
                             if (item2.UID.indexOf('LastActivity') > -1) {
                                 lastActivity = item2.properties.lastActivityTime;
+                            }
+                            else if (item2.UID.indexOf('ps.') > -1) {
+                                settings.setParams(item2.properties.remoteSwitch);
                             }
                             else {
                                 if (item2.UID.indexOf('BinarySensor') > -1 || item2.UID.indexOf('MildewSensor') > -1) {
@@ -191,7 +199,7 @@ var Devolo = (function () {
                 else {
                     return;
                 }
-                device.setParams(item.UID, item.properties.itemName, item.properties.deviceModelUID, item.properties.icon, item.properties.zoneId, item.properties.zone, item.properties.batteryLevel, (item.properties.batteryLow == false), lastActivity, sensors);
+                device.setParams(item.UID, item.properties.itemName, item.properties.deviceModelUID, item.properties.icon, item.properties.zoneId, item.properties.zone, item.properties.batteryLevel, (item.properties.batteryLow == false), lastActivity, sensors, settings);
                 //var device = Object.create(window[deviceClassName].prototype);
                 /*device.constructor.apply(device, item.UID,
                                                  item.properties.itemName,

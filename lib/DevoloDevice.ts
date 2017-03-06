@@ -1,6 +1,15 @@
 import { DevoloAPI } from './DevoloApi';
 import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch } from './DevoloSensor';
 
+export class DeviceSettings {
+    stateSwitchable: boolean = true;
+
+    setParams(stateSwitchable: boolean) {
+        this.stateSwitchable = stateSwitchable;
+    }
+
+}
+
 export abstract class Device {
 
     id: string;
@@ -13,8 +22,9 @@ export abstract class Device {
     batteryLow: boolean;
     lastActivity: number;
     sensors: Sensor[];
+    settings: DeviceSettings;
 
-    setParams(id: string, name: string, model: string, icon: string, zoneId: string, zone: string, batteryLevel: number, batteryLow: boolean, lastActivity: number, sensors: Sensor[]) {
+    setParams(id: string, name: string, model: string, icon: string, zoneId: string, zone: string, batteryLevel: number, batteryLow: boolean, lastActivity: number, sensors: Sensor[], settings: DeviceSettings) {
         this.id = id;
         this.name = name;
         this.model = model;
@@ -25,6 +35,7 @@ export abstract class Device {
         this.batteryLow = batteryLow;
         this.lastActivity = lastActivity;
         this.sensors = sensors;
+        this.settings = settings;
     }
 
     turnOn(callback: (err?:string) => void) {
@@ -50,7 +61,7 @@ export abstract class Device {
         if(sensor.state === state) {
             callback(null); return;
         }
-        if(sendViaAPI) {
+        if(this.settings.stateSwitchable && sendViaAPI) {
             var operation = (state==0) ? 'turnOff' : 'turnOn';
             var api:DevoloAPI = DevoloAPI.getInstance();
             api.invokeOperation(sensor, operation, function(err) {

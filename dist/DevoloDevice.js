@@ -6,10 +6,20 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DevoloApi_1 = require("./DevoloApi");
 var DevoloSensor_1 = require("./DevoloSensor");
+var DeviceSettings = (function () {
+    function DeviceSettings() {
+        this.stateSwitchable = true;
+    }
+    DeviceSettings.prototype.setParams = function (stateSwitchable) {
+        this.stateSwitchable = stateSwitchable;
+    };
+    return DeviceSettings;
+}());
+exports.DeviceSettings = DeviceSettings;
 var Device = (function () {
     function Device() {
     }
-    Device.prototype.setParams = function (id, name, model, icon, zoneId, zone, batteryLevel, batteryLow, lastActivity, sensors) {
+    Device.prototype.setParams = function (id, name, model, icon, zoneId, zone, batteryLevel, batteryLow, lastActivity, sensors, settings) {
         this.id = id;
         this.name = name;
         this.model = model;
@@ -20,6 +30,7 @@ var Device = (function () {
         this.batteryLow = batteryLow;
         this.lastActivity = lastActivity;
         this.sensors = sensors;
+        this.settings = settings;
     };
     Device.prototype.turnOn = function (callback) {
         //        console.log("turnon");
@@ -44,7 +55,7 @@ var Device = (function () {
             callback(null);
             return;
         }
-        if (sendViaAPI) {
+        if (this.settings.stateSwitchable && sendViaAPI) {
             var operation = (state == 0) ? 'turnOff' : 'turnOn';
             var api = DevoloApi_1.DevoloAPI.getInstance();
             api.invokeOperation(sensor, operation, function (err) {
