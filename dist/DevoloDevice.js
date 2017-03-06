@@ -34,10 +34,18 @@ var Device = (function () {
     };
     Device.prototype.turnOn = function (callback) {
         //        console.log("turnon");
+        if (!this.settings.stateSwitchable) {
+            callback('Switching of device is disabled.');
+            return;
+        }
         this.setState(1, callback, true);
     };
     Device.prototype.turnOff = function (callback) {
         //        console.log("turnoff");
+        if (!this.settings.stateSwitchable) {
+            callback('Switching of device is disabled.');
+            return;
+        }
         this.setState(0, callback, true);
     };
     Device.prototype.setState = function (state, callback, useAPI) {

@@ -40,11 +40,19 @@ export abstract class Device {
 
     turnOn(callback: (err?:string) => void) {
 //        console.log("turnon");
+        if(!this.settings.stateSwitchable) {
+            callback('Switching of device is disabled.');
+            return;
+        }
         this.setState(1, callback, true);
     }
 
     turnOff(callback: (err:string) => void) {
 //        console.log("turnoff");
+        if(!this.settings.stateSwitchable) {
+            callback('Switching of device is disabled.');
+            return;
+        }
         this.setState(0, callback, true);
     }
 
