@@ -196,6 +196,9 @@ var Devolo = (function () {
                 else if (item.properties.deviceModelUID.indexOf('Thermostat:Valve') > -1) {
                     device = new DevoloDevice_1.ThermostatValveDevice();
                 }
+                else if (item.properties.deviceModelUID.indexOf('Smoke:Detector') > -1) {
+                    device = new DevoloDevice_1.SmokeDetectorDevice();
+                }
                 else {
                     console.log('Device', item.properties.deviceModelUID, 'is not supported (yet). Open an issue on github and ask for adding it.');
                     return;

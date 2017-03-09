@@ -237,3 +237,4 @@ export class HumidityDevice extends Device { }
 export class FloodDevice extends Device { }
 export class MotionDevice extends Device { }
 export class ThermostatValveDevice extends Device { }
+export class SmokeDetectorDevice extends Device { }

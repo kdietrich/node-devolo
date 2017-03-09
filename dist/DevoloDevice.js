@@ -262,3 +262,11 @@ var ThermostatValveDevice = (function (_super) {
     return ThermostatValveDevice;
 }(Device));
 exports.ThermostatValveDevice = ThermostatValveDevice;
+var SmokeDetectorDevice = (function (_super) {
+    __extends(SmokeDetectorDevice, _super);
+    function SmokeDetectorDevice() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return SmokeDetectorDevice;
+}(Device));
+exports.SmokeDetectorDevice = SmokeDetectorDevice;

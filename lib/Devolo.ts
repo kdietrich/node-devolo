@@ -1,6 +1,6 @@
 import { DevoloOptions, Zone } from './DevoloMisc';
 import { DevoloAPI } from './DevoloApi';
-import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, ThermostatValveDevice } from './DevoloDevice';
+import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, ThermostatValveDevice, SmokeDetectorDevice } from './DevoloDevice';
 import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch } from './DevoloSensor';
 
 export class Devolo {
@@ -224,6 +224,9 @@ export class Devolo {
                 }
                 else if(item.properties.deviceModelUID.indexOf('Thermostat:Valve') > -1) {
                     device = new ThermostatValveDevice();
+                }
+                else if(item.properties.deviceModelUID.indexOf('Smoke:Detector') > -1) {
+                    device = new SmokeDetectorDevice();
                 }
                 else {
                     console.log('Device', item.properties.deviceModelUID, 'is not supported (yet). Open an issue on github and ask for adding it.');
