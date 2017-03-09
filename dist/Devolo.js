@@ -193,10 +193,8 @@ var Devolo = (function () {
                 else if (item.properties.deviceModelUID.indexOf('Wall:Plug:Switch:and:Meter') > -1) {
                     device = new DevoloDevice_1.SwitchMeterDevice();
                 }
-                else if (item.properties.deviceModelUID.indexOf('Siren') > -1) {
-                    device = new DevoloDevice_1.SirenDevice();
-                }
                 else {
+                    console.log('Device', item.properties.deviceModelUID, 'is not supported (yet). Open an issue on github and ask for adding it.');
                     return;
                 }
                 device.setParams(item.UID, item.properties.itemName, item.properties.deviceModelUID, item.properties.icon, item.properties.zoneId, item.properties.zone, item.properties.batteryLevel, (item.properties.batteryLow == false), lastActivity, sensors, settings);

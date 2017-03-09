@@ -222,10 +222,8 @@ export class Devolo {
                 else if(item.properties.deviceModelUID.indexOf('Wall:Plug:Switch:and:Meter') > -1) {
                     device = new SwitchMeterDevice();
                 }
-                else if(item.properties.deviceModelUID.indexOf('Siren') > -1) {
-                    device = new SirenDevice();
-                }
                 else {
+                    console.log('Device', item.properties.deviceModelUID, 'is not supported (yet). Open an issue on github and ask for adding it.');
                     return;
                 }
 
