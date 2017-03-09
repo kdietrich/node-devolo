@@ -1,6 +1,6 @@
 import { DevoloOptions, Zone } from './DevoloMisc';
 import { DevoloAPI } from './DevoloApi';
-import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, SirenDevice } from './DevoloDevice';
+import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, ThermostatValveDevice } from './DevoloDevice';
 import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch } from './DevoloSensor';
 
 export class Devolo {
@@ -187,7 +187,7 @@ export class Devolo {
                                 else if(item2.UID.indexOf('MultiLevelSwitch') > -1) {
                                     sensors.push(new MultiLevelSwitch(
                                         item2.UID,
-                                        item2.properties.sensorType,
+                                        item2.properties.switchType,
                                         item2.properties.value,
                                         item2.properties.targetValue,
                                         item2.properties.min,
@@ -221,6 +221,9 @@ export class Devolo {
                 }
                 else if(item.properties.deviceModelUID.indexOf('Wall:Plug:Switch:and:Meter') > -1) {
                     device = new SwitchMeterDevice();
+                }
+                else if(item.properties.deviceModelUID.indexOf('Thermostat:Valve') > -1) {
+                    device = new ThermostatValveDevice();
                 }
                 else {
                     console.log('Device', item.properties.deviceModelUID, 'is not supported (yet). Open an issue on github and ask for adding it.');

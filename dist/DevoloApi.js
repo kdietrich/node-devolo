@@ -191,14 +191,15 @@ var DevoloAPI = (function () {
         }, true, 1, null, null, 'JSESSIONID=' + this._options.sessionid);
     };
     ;
-    DevoloAPI.prototype.invokeOperation = function (sensor, operation, callback) {
+    DevoloAPI.prototype.invokeOperation = function (sensor, operation, callback, value) {
+        if (value === void 0) { value = []; }
         var data = {
             jsonrpc: '2.0',
             method: 'FIM/invokeOperation',
             params: [
                 sensor.id,
                 operation,
-                []
+                value
             ]
         };
         this.call('POST', '/remote/json-rpc', data, function (err, res) {

@@ -100,17 +100,59 @@ export abstract class Device {
     getValue(type:string) : number {
 //        console.log("getValue");
         var sensor: MultiLevelSensor = this.getSensor(MultiLevelSensor, type) as MultiLevelSensor;
-        if(!sensor)
-            throw new Error('Device has no suitable sensor.');
+        if(!sensor) {
+            sensor = this.getSensor(MultiLevelSwitch, type) as MultiLevelSensor;
+            if(!sensor)
+                throw new Error('Device has no suitable sensor.');
+        }
         return sensor.value;
     }
 
     setValue(type: string, value: number) : void {
 //        console.log("setValue");
         var sensor: MultiLevelSensor = this.getSensor(MultiLevelSensor, type) as MultiLevelSensor;
+        if(!sensor) {
+            sensor = this.getSensor(MultiLevelSwitch, type) as MultiLevelSensor;
+            if(!sensor)
+                throw new Error('Device has no suitable sensor.');
+        }
+        sensor.value = value;
+    }
+
+    getTargetValue(type:string) : number {
+//        console.log("getTargetValue");
+        var sensor: MultiLevelSwitch = this.getSensor(MultiLevelSwitch, type) as MultiLevelSwitch;
         if(!sensor)
             throw new Error('Device has no suitable sensor.');
-        sensor.value = value;
+        return sensor.targetValue;
+    }
+
+    setTargetValue(type: string, targetValue: number, callback: (err:string) => void, useAPI: boolean=false) {
+//        console.log("setTargetValue");
+        var sendViaAPI: boolean = useAPI;
+        var sensor: MultiLevelSwitch = this.getSensor(MultiLevelSwitch, type) as MultiLevelSwitch;
+        if(!sensor) {
+            callback('Device has no suitable sensor.');
+            return;
+        }
+        if(sensor.targetValue === targetValue) {
+            callback(null); return;
+        }
+        if(sendViaAPI) {
+            var operation = 'sendValue';
+            var api:DevoloAPI = DevoloAPI.getInstance();
+            api.invokeOperation(sensor, operation, function(err) {
+                if(err) {
+                    callback(err); return;
+                }
+                sensor.targetValue = targetValue;
+                callback(null);
+            }, [targetValue]);
+        }
+        else {
+            sensor.targetValue = targetValue;
+            callback(null);
+        }
     }
 
     getCurrentValue(type:string) : number {
@@ -194,4 +236,4 @@ export class DoorWindowDevice extends Device { }
 export class HumidityDevice extends Device { }
 export class FloodDevice extends Device { }
 export class MotionDevice extends Device { }
-export class SirenDevice extends Device { }
+export class ThermostatValveDevice extends Device { }

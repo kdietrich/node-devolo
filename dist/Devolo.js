@@ -167,7 +167,7 @@ var Devolo = (function () {
                                     sensors.push(new DevoloSensor_1.MultiLevelSensor(item2.UID, item2.properties.sensorType, item2.properties.value));
                                 }
                                 else if (item2.UID.indexOf('MultiLevelSwitch') > -1) {
-                                    sensors.push(new DevoloSensor_1.MultiLevelSwitch(item2.UID, item2.properties.sensorType, item2.properties.value, item2.properties.targetValue, item2.properties.min, item2.properties.max));
+                                    sensors.push(new DevoloSensor_1.MultiLevelSwitch(item2.UID, item2.properties.switchType, item2.properties.value, item2.properties.targetValue, item2.properties.min, item2.properties.max));
                                 }
                             }
                         });
@@ -192,6 +192,9 @@ var Devolo = (function () {
                 }
                 else if (item.properties.deviceModelUID.indexOf('Wall:Plug:Switch:and:Meter') > -1) {
                     device = new DevoloDevice_1.SwitchMeterDevice();
+                }
+                else if (item.properties.deviceModelUID.indexOf('Thermostat:Valve') > -1) {
+                    device = new DevoloDevice_1.ThermostatValveDevice();
                 }
                 else {
                     console.log('Device', item.properties.deviceModelUID, 'is not supported (yet). Open an issue on github and ask for adding it.');

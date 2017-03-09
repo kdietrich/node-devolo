@@ -93,16 +93,59 @@ var Device = (function () {
     Device.prototype.getValue = function (type) {
         //        console.log("getValue");
         var sensor = this.getSensor(DevoloSensor_1.MultiLevelSensor, type);
-        if (!sensor)
-            throw new Error('Device has no suitable sensor.');
+        if (!sensor) {
+            sensor = this.getSensor(DevoloSensor_1.MultiLevelSwitch, type);
+            if (!sensor)
+                throw new Error('Device has no suitable sensor.');
+        }
         return sensor.value;
     };
     Device.prototype.setValue = function (type, value) {
         //        console.log("setValue");
         var sensor = this.getSensor(DevoloSensor_1.MultiLevelSensor, type);
+        if (!sensor) {
+            sensor = this.getSensor(DevoloSensor_1.MultiLevelSwitch, type);
+            if (!sensor)
+                throw new Error('Device has no suitable sensor.');
+        }
+        sensor.value = value;
+    };
+    Device.prototype.getTargetValue = function (type) {
+        //        console.log("getTargetValue");
+        var sensor = this.getSensor(DevoloSensor_1.MultiLevelSwitch, type);
         if (!sensor)
             throw new Error('Device has no suitable sensor.');
-        sensor.value = value;
+        return sensor.targetValue;
+    };
+    Device.prototype.setTargetValue = function (type, targetValue, callback, useAPI) {
+        if (useAPI === void 0) { useAPI = false; }
+        //        console.log("setTargetValue");
+        var sendViaAPI = useAPI;
+        var sensor = this.getSensor(DevoloSensor_1.MultiLevelSwitch, type);
+        if (!sensor) {
+            callback('Device has no suitable sensor.');
+            return;
+        }
+        if (sensor.targetValue === targetValue) {
+            callback(null);
+            return;
+        }
+        if (sendViaAPI) {
+            var operation = 'sendValue';
+            var api = DevoloApi_1.DevoloAPI.getInstance();
+            api.invokeOperation(sensor, operation, function (err) {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+                sensor.targetValue = targetValue;
+                callback(null);
+            }, [targetValue]);
+        }
+        else {
+            sensor.targetValue = targetValue;
+            callback(null);
+        }
     };
     Device.prototype.getCurrentValue = function (type) {
         //        console.log("getCurrentValue");
@@ -211,11 +254,11 @@ var MotionDevice = (function (_super) {
     return MotionDevice;
 }(Device));
 exports.MotionDevice = MotionDevice;
-var SirenDevice = (function (_super) {
-    __extends(SirenDevice, _super);
-    function SirenDevice() {
+var ThermostatValveDevice = (function (_super) {
+    __extends(ThermostatValveDevice, _super);
+    function ThermostatValveDevice() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    return SirenDevice;
+    return ThermostatValveDevice;
 }(Device));
-exports.SirenDevice = SirenDevice;
+exports.ThermostatValveDevice = ThermostatValveDevice;

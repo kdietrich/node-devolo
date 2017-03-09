@@ -181,14 +181,14 @@ export class DevoloAPI {
         }, true, 1, null, null, 'JSESSIONID='+this._options.sessionid);
     };
 
-    invokeOperation(sensor: Sensor, operation: string, callback: (err?: string) => void) {
+    invokeOperation(sensor: Sensor, operation: string, callback: (err?: string) => void, value: number[] = [], ) {
         var data = {
             jsonrpc: '2.0',
             method: 'FIM/invokeOperation',
             params: [
                 sensor.id,
                 operation,
-                []
+                value
             ]
         };
         this.call('POST', '/remote/json-rpc', data, function(err, res: any) {
