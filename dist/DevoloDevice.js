@@ -270,3 +270,11 @@ var SmokeDetectorDevice = (function (_super) {
     return SmokeDetectorDevice;
 }(Device));
 exports.SmokeDetectorDevice = SmokeDetectorDevice;
+var RoomThermostatDevice = (function (_super) {
+    __extends(RoomThermostatDevice, _super);
+    function RoomThermostatDevice() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return RoomThermostatDevice;
+}(Device));
+exports.RoomThermostatDevice = RoomThermostatDevice;
