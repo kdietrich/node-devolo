@@ -1,6 +1,6 @@
-#node-devolo
+# node-devolo
 
-##Devolo Home Control (reverse-engineered)
+## Devolo Home Control (reverse-engineered)
 (C) 2017, Kevin Dietrich
 
 Control your favorite home control devices via this Node.js API.
@@ -9,11 +9,11 @@ Control your favorite home control devices via this Node.js API.
 
 Thanks to [@nicoh88](https://github.com/nicoh88).
 
-##Documentation
+## Documentation
 
-...will follow, until then check out [homebridge-devolo](https://github.com/kdietrich/homebridge-devolo) for an example. 
+...will follow, until then check out [homebridge-devolo](https://github.com/kdietrich/homebridge-devolo) for an example.
 
-##License
+## License
 
 The MIT License (MIT)
 
