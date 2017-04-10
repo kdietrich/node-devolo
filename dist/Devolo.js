@@ -234,6 +234,75 @@ var Devolo = (function () {
         });
     };
     ;
+    Devolo.prototype.getRules = function (callback) {
+        var self = this;
+        var rules = [];
+        var itemsProcessed = 0;
+        self._api.fetchItems(["devolo.Services"], function (err, services) {
+            if (err) {
+                callback(err);
+                return;
+            }
+            var serviceIDs = [];
+            for (var i = 0; i < services[0].properties.serviceUIDs.length; i++) {
+                serviceIDs.push(services[0].properties.serviceUIDs[i]);
+            }
+            self._api.fetchItems(serviceIDs, function (err2, services2) {
+                if (err2) {
+                    callback(err2);
+                    return;
+                }
+                services2.forEach(function (service, index, array) {
+                    var elementUIDs = service.properties.elementUIDs;
+                    self._api.fetchItems(elementUIDs, function (err3, elements) {
+                        if (err3) {
+                            callback(err3);
+                            return;
+                        }
+                        var rule = new DevoloMisc_1.Rule();
+                        rule.setParams(service.UID, service.properties.itemName, service.properties.description, elements[0].properties.enabled);
+                        rules.push(rule);
+                        itemsProcessed++;
+                        if (itemsProcessed === array.length) {
+                            callback(null, rules);
+                        }
+                    });
+                });
+            });
+        });
+    };
+    ;
+    Devolo.prototype.getScenes = function (callback) {
+        var self = this;
+        var scenes = [];
+        var itemsProcessed = 0;
+        self._api.fetchItems(["devolo.Scene"], function (err, scenesData) {
+            if (err) {
+                callback(err);
+                return;
+            }
+            var sceneIDs = [];
+            for (var i = 0; i < scenesData[0].properties.sceneUIDs.length; i++) {
+                sceneIDs.push(scenesData[0].properties.sceneUIDs[i]);
+            }
+            self._api.fetchItems(sceneIDs, function (err2, scenes2Data) {
+                if (err2) {
+                    callback(err2);
+                    return;
+                }
+                scenes2Data.forEach(function (sceneData, index, array) {
+                    var scene = new DevoloMisc_1.Scene();
+                    scene.setParams(sceneData.UID, sceneData.properties.itemName, sceneData.properties.description);
+                    scenes.push(scene);
+                    itemsProcessed++;
+                    if (itemsProcessed === array.length) {
+                        callback(null, scenes);
+                    }
+                });
+            });
+        });
+    };
+    ;
     return Devolo;
 }());
 exports.Devolo = Devolo;
