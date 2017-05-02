@@ -56,9 +56,10 @@ var Devolo = (function () {
         });
     };
     ;
-    Devolo.prototype.auth = function (callback) {
+    Devolo.prototype.auth = function (callback, forceRenew) {
+        if (forceRenew === void 0) { forceRenew = false; }
         //        console.log('auth');
-        if (this._options.sessionid) {
+        if (this._options.sessionid && !forceRenew) {
             callback();
             return;
         }

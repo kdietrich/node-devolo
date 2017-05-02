@@ -56,9 +56,9 @@ export class Devolo {
         });
     };
 
-    auth(callback: (err?:string) => void) : void {
+    auth(callback: (err?:string) => void, forceRenew: boolean = false) : void {
 //        console.log('auth');
-        if(this._options.sessionid) {
+        if(this._options.sessionid && !forceRenew) {
             callback();
             return;
         }
