@@ -93,7 +93,7 @@ export class DevoloAPI {
 
         });
 
-        req.setTimeout(5000, function () {
+        req.setTimeout(10000, function () {
             req.connection.destroy();
         });
 

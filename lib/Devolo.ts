@@ -116,95 +116,21 @@ export class Devolo {
     getDevices(ids: string[], callback: (err: string, devices?: Device[]) => void) : void {
 //        console.log("getDevices")
         var self = this;
+        var allElementUIDs = [];
+        var devices: Device[] = [];
 
         self._api.fetchItems(ids, function(err, items) {
             if(err) {
                 callback(err); return;
             }
-            var devices: Device[] = [];
-            var itemsProcessed = 0;
 
-            items.forEach(function(item, index, array) {
-//                console.log(items); return;
+            for(var i=0; i<items.length; i++) {
+                var item = items[i];
+//               console.log(item);
 
                 if(item.UID.indexOf('virtual:device') > -1) {
-                    itemsProcessed++;
-                    return; //not supported yet
+                    continue; //not supported yet
                 }
-                var sensors: Sensor[] = [];
-                var lastActivity = null;
-                var settings: DeviceSettings = new DeviceSettings();
-                var elementUIDs = item.properties.elementUIDs;
-                if(item.properties.deviceModelUID.indexOf('Wall:Plug:Switch:and:Meter') > -1) {
-                    elementUIDs.push('ps.' + item.UID);
-                }
-
-                self._api.fetchItems(elementUIDs, function(err2, items2) {
-                    if(err2) {
-                        callback(err2); return;
-                    }
-                    if(items2) {
-//                        console.log(items2); return;
-                        items2.forEach(function(item2) {
-                            if(item2.UID.indexOf('LastActivity') > -1) {
-                                lastActivity = item2.properties.lastActivityTime;
-                            }
-                            else if(item2.UID.indexOf('ps.') > -1) {
-                                settings.setParams(item2.properties.remoteSwitch);
-                            }
-                            else {
-                                if(item2.UID.indexOf('BinarySensor') > -1 || item2.UID.indexOf('MildewSensor') > -1) {
-                                    sensors.push(new BinarySensor(
-                                        item2.UID,
-                                        item2.properties.sensorType,
-                                        item2.properties.state
-                                    ));
-                                }
-                                else if(item2.UID.indexOf('Meter') > -1) {
-                                    sensors.push(new MeterSensor(
-                                        item2.UID,
-                                        item2.properties.sensorType,
-                                        item2.properties.currentValue,
-                                        item2.properties.totalValue,
-                                        item2.properties.sinceTime
-                                    ));
-                                }
-                                else if(item2.UID.indexOf('BinarySwitch') > -1) {
-                                    sensors.push(new BinarySwitch(
-                                        item2.UID,
-                                        item2.properties.sensorType,
-                                        item2.properties.state,
-                                        item2.properties.targetState
-                                    ));
-                                }
-                                else if(item2.UID.indexOf('MultiLevelSensor') > -1 || item2.UID.indexOf('HumidityBarZone') > -1 || item2.UID.indexOf('DewpointSensor') > -1 || item2.UID.indexOf('HumidityBarValue') > -1) {
-                                    sensors.push(new MultiLevelSensor(
-                                        item2.UID,
-                                        item2.properties.sensorType,
-                                        item2.properties.value
-                                    ));
-                                }
-                                else if(item2.UID.indexOf('MultiLevelSwitch') > -1) {
-                                    sensors.push(new MultiLevelSwitch(
-                                        item2.UID,
-                                        item2.properties.switchType,
-                                        item2.properties.value,
-                                        item2.properties.targetValue,
-                                        item2.properties.min,
-                                        item2.properties.max
-                                    ));
-                                }
-
-                            }
-
-                        });
-                    }
-                    itemsProcessed++;
-                    if(itemsProcessed === array.length) {
-                      callback(null, devices);
-                    }
-
-                });
 
                 var device;
                 if(item.properties.deviceModelUID.indexOf('Door/Window:Sensor') > -1) {
@@ -233,7 +159,12 @@ export class Devolo {
                 }
                 else {
                     console.log('Device', item.properties.deviceModelUID, 'is not supported (yet). Open an issue on github and ask for adding it.');
-                    return;
+                    continue;
+                }
+
+                allElementUIDs = allElementUIDs.concat(item.properties.elementUIDs);
+                if(item.properties.deviceModelUID.indexOf('Wall:Plug:Switch:and:Meter') > -1) {
+                    allElementUIDs.push('ps.' + item.UID);
                 }
 
                 device.setParams(item.UID,
@@ -244,24 +175,91 @@ export class Devolo {
                                  item.properties.zone,
                                  item.properties.batteryLevel as number,
                                  (item.properties.batteryLow==false),
-                                 lastActivity,
-                                 sensors,
-                                 settings);
+                                 null,
+                                 [],
+                                 new DeviceSettings());
 
-                //var device = Object.create(window[deviceClassName].prototype);
-                /*device.constructor.apply(device, item.UID,
-                                                 item.properties.itemName,
-                                                 item.properties.deviceModelUID,
-                                                 item.properties.icon,
-                                                 item.properties.zoneId,
-                                                 item.properties.zone,
-                                                 item.properties.batteryLevel,
-                                                 item.properties.batteryLow,
-                                                 lastActivity,
-                                                 sensors
-                );*/
                 devices.push(device);
 
+            }
+            if(allElementUIDs.length==0) {
+                callback(null, devices);
+                return;
+            }
+
+            self._api.fetchItems(allElementUIDs, function(err2, items2) {
+                if(err2) {
+                    callback(err2); return;
+                }
+                if(items2) {
+
+                    for(var i=0; i<items2.length; i++) {
+                        var item2 = items2[i];
+                        //find suitable device for sensor
+                        var device = null;
+                        for(var k=0; k<devices.length; k++) {
+                            if(item2.UID.indexOf(devices[k].id) > -1) {
+                                device = devices[k];
+                            }
+                        }
+
+                        var lastActivity = null;
+                        var settings: DeviceSettings = new DeviceSettings();
+
+                        if(item2.UID.indexOf('LastActivity') > -1) {
+                            device.lastActivity = item2.properties.lastActivityTime;
+                        }
+                        else if(item2.UID.indexOf('ps.') > -1) {
+                            settings.setParams(item2.properties.remoteSwitch);
+                            device.settings = settings;
+                        }
+                        else {
+                            if(item2.UID.indexOf('BinarySensor') > -1 || item2.UID.indexOf('MildewSensor') > -1) {
+                                device.sensors.push(new BinarySensor(
+                                    item2.UID,
+                                    item2.properties.sensorType,
+                                    item2.properties.state
+                                ));
+                            }
+                            else if(item2.UID.indexOf('Meter') > -1) {
+                                device.sensors.push(new MeterSensor(
+                                    item2.UID,
+                                    item2.properties.sensorType,
+                                    item2.properties.currentValue,
+                                    item2.properties.totalValue,
+                                    item2.properties.sinceTime
+                                ));
+                            }
+                            else if(item2.UID.indexOf('BinarySwitch') > -1) {
+                                device.sensors.push(new BinarySwitch(
+                                    item2.UID,
+                                    item2.properties.sensorType,
+                                    item2.properties.state,
+                                    item2.properties.targetState
+                                ));
+                            }
+                            else if(item2.UID.indexOf('MultiLevelSensor') > -1 || item2.UID.indexOf('HumidityBarZone') > -1 || item2.UID.indexOf('DewpointSensor') > -1 || item2.UID.indexOf('HumidityBarValue') > -1) {
+                                device.sensors.push(new MultiLevelSensor(
+                                    item2.UID,
+                                    item2.properties.sensorType,
+                                    item2.properties.value
+                                ));
+                            }
+                            else if(item2.UID.indexOf('MultiLevelSwitch') > -1) {
+                                device.sensors.push(new MultiLevelSwitch(
+                                    item2.UID,
+                                    item2.properties.switchType,
+                                    item2.properties.value,
+                                    item2.properties.targetValue,
+                                    item2.properties.min,
+                                    item2.properties.max
+                                ));
+                            }
+
+                        }
+                    }
+                }
+                callback(null, devices);
             });
 
         });
@@ -280,7 +278,7 @@ export class Devolo {
     getRules(callback: (err: string, rules?: Rule[]) => void) : void {
         var self = this;
         var rules: Rule[] = [];
-        var itemsProcessed = 0;
+        var allElementUIDs = [];
         self._api.fetchItems(["devolo.Services"], function(err, services) {
             if(err) {
                 callback(err); return;
@@ -293,27 +291,37 @@ export class Devolo {
                 if(err2) {
                     callback(err2); return;
                 }
+                for(var i=0; i<services2.length; i++) {
+                    var service = services2[i];
+                    allElementUIDs = allElementUIDs.concat(service.properties.elementUIDs);
 
-                services2.forEach(function(service, index, array) {
+                    var rule = new Rule();
+                    rule.setParams(service.UID,
+                                   service.properties.itemName,
+                                   service.properties.description,
+                                   false);
+                    rules.push(rule);
 
-                    var elementUIDs = service.properties.elementUIDs;
-                    self._api.fetchItems(elementUIDs, function(err3, elements) {
-                        if(err3) {
-                            callback(err3); return;
+                }
+
+                self._api.fetchItems(allElementUIDs, function(err3, elements) {
+                    if(err3) {
+                        callback(err3); return;
+                    }
+                    for(var i=0; i<elements.length; i++) {
+                        var element = elements[i];
+                        //find suitable rule for sensor
+                        var rule = null;
+                        for(var i=0; i<rules.length; i++) {
+                            var id = rules[i].id.replace('Service', 'ServiceControl');
+                            if(element.UID.indexOf(id) > -1) {
+                                rule = rules[i];
+                            }
                         }
-                        var rule = new Rule();
-                        rule.setParams(service.UID,
-                                       service.properties.itemName,
-                                       service.properties.description,
-                                       elements[0].properties.enabled);
-                        rules.push(rule);
+                        rule.enabled = element.properties.enabled;
+                    }
 
-                        itemsProcessed++;
-                        if(itemsProcessed === array.length) {
-                            callback(null, rules);
-                        }
-                    });
-
+                    callback(null, rules);
                 });
 
 
