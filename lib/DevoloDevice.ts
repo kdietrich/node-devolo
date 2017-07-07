@@ -39,7 +39,6 @@ export abstract class Device {
     }
 
     turnOn(callback: (err?:string) => void) {
-//        console.log("turnon");
         if(!this.settings.stateSwitchable) {
             callback('Switching of device is disabled.');
             return;
@@ -58,13 +57,14 @@ export abstract class Device {
 
     setState(state: number, callback: (err:string) => void, useAPI: boolean=false) {
 //        console.log("setState");
-        var sendViaAPI: boolean = false;
-        var sensor: BinarySensor = this.getSensor(BinarySensor) as BinarySensor;
+        var sendViaAPI: boolean = useAPI;
+        var sensor: BinarySensor = this.getSensor(BinarySwitch) as BinarySensor;
         if(!sensor) {
-            sensor = this.getSensor(BinarySwitch) as BinarySensor;
-            if(!sensor)
-                callback('Device has no suitable sensor.');
-            sendViaAPI = useAPI;
+            sensor = this.getSensor(BinarySensor) as BinarySensor;
+            if(!sensor) {
+                callback('Device has no suitable sensor.'); return;
+            }
+            sendViaAPI = false;
         }
         if(sensor.state === state) {
             callback(null); return;
@@ -88,9 +88,9 @@ export abstract class Device {
 
     getState() : number {
 //        console.log("getState");
-        var sensor: BinarySensor = this.getSensor(BinarySensor) as BinarySensor;
+        var sensor: BinarySensor = this.getSensor(BinarySwitch) as BinarySensor;
         if(!sensor) {
-            sensor = this.getSensor(BinarySwitch) as BinarySensor;
+            sensor = this.getSensor(BinarySensor) as BinarySensor;
             if(!sensor)
                 throw new Error('Device has no suitable sensor.');
         }

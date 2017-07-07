@@ -33,7 +33,6 @@ var Device = (function () {
         this.settings = settings;
     };
     Device.prototype.turnOn = function (callback) {
-        //        console.log("turnon");
         if (!this.settings.stateSwitchable) {
             callback('Switching of device is disabled.');
             return;
@@ -51,13 +50,15 @@ var Device = (function () {
     Device.prototype.setState = function (state, callback, useAPI) {
         if (useAPI === void 0) { useAPI = false; }
         //        console.log("setState");
-        var sendViaAPI = false;
-        var sensor = this.getSensor(DevoloSensor_1.BinarySensor);
+        var sendViaAPI = useAPI;
+        var sensor = this.getSensor(DevoloSensor_1.BinarySwitch);
         if (!sensor) {
-            sensor = this.getSensor(DevoloSensor_1.BinarySwitch);
-            if (!sensor)
+            sensor = this.getSensor(DevoloSensor_1.BinarySensor);
+            if (!sensor) {
                 callback('Device has no suitable sensor.');
-            sendViaAPI = useAPI;
+                return;
+            }
+            sendViaAPI = false;
         }
         if (sensor.state === state) {
             callback(null);
@@ -82,9 +83,9 @@ var Device = (function () {
     };
     Device.prototype.getState = function () {
         //        console.log("getState");
-        var sensor = this.getSensor(DevoloSensor_1.BinarySensor);
+        var sensor = this.getSensor(DevoloSensor_1.BinarySwitch);
         if (!sensor) {
-            sensor = this.getSensor(DevoloSensor_1.BinarySwitch);
+            sensor = this.getSensor(DevoloSensor_1.BinarySensor);
             if (!sensor)
                 throw new Error('Device has no suitable sensor.');
         }
