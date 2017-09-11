@@ -5,7 +5,7 @@ var DevoloDevice_1 = require("./DevoloDevice");
 var DevoloSensor_1 = require("./DevoloSensor");
 var Devolo = (function () {
     function Devolo(options, callback) {
-        this.version = '201702202047';
+        this.version = '201707161504';
         this._api = DevoloApi_1.DevoloAPI.getInstance();
         this._options = options;
         this._api.setOptions(options);
@@ -20,7 +20,13 @@ var Devolo = (function () {
                     callback(err);
                     return;
                 }
-                callback(null, self);
+                self._api.connect(function (err) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    callback(null, self);
+                });
             });
         });
     }
@@ -297,15 +303,20 @@ var Devolo = (function () {
                     callback(err2);
                     return;
                 }
-                scenes2Data.forEach(function (sceneData, index, array) {
-                    var scene = new DevoloMisc_1.Scene();
-                    scene.setParams(sceneData.UID, sceneData.properties.itemName, sceneData.properties.description);
-                    scenes.push(scene);
-                    itemsProcessed++;
-                    if (itemsProcessed === array.length) {
-                        callback(null, scenes);
-                    }
-                });
+                if (scenes2Data) {
+                    scenes2Data.forEach(function (sceneData, index, array) {
+                        var scene = new DevoloMisc_1.Scene();
+                        scene.setParams(sceneData.UID, sceneData.properties.itemName, sceneData.properties.description);
+                        scenes.push(scene);
+                        itemsProcessed++;
+                        if (itemsProcessed === array.length) {
+                            callback(null, scenes);
+                        }
+                    });
+                }
+                else {
+                    callback(null, []);
+                }
             });
         });
     };

@@ -1,5 +1,7 @@
 import { DevoloOptions, Zone } from './DevoloMisc';
 import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch } from './DevoloSensor';
+const WebSocket = require('ws');
+import { EventEmitter } from 'events';
 
 export class DevoloAPI {
 
@@ -7,6 +9,9 @@ export class DevoloAPI {
     private _apiHost:string = 'www.mydevolo.com';
     private _apiVersion:string ='/v1';
     private _options: DevoloOptions;
+    public _ws; //wrong visibility
+    private _wsConnected:boolean = false;
+    public _wsMessageEvents: EventEmitter = new EventEmitter();
 
     constructor() {
         if(DevoloAPI._instance) {
@@ -196,7 +201,62 @@ export class DevoloAPI {
             if(err) { callback(err); return; }
             callback();
         }, true, 1, null, null, 'JSESSIONID='+this._options.sessionid);
-    }
+    };
+
+    connect(callback: (err?:string) => void) {
+        var self = this;
+        console.log('Trying to connect to socket.');
+        this._ws = new WebSocket('ws://' + this._options.centralHost + '/remote/events/?topics=com/prosyst/mbs/services/fim/FunctionalItemEvent/PROPERTY_CHANGED&filter=(|(GW_ID=1504013000000377)(!(GW_ID=*)))');
+        this._ws.on('open', function() {
+            console.log('Websocket open');
+            self._wsConnected = true;
+            self.startHeartbeatHandler();
+            callback();
+        });
+        this._ws.on('message', function(message) {
+            var jsonStr;
+            try {
+                jsonStr = JSON.parse(message);
+            }
+            catch(err) {
+                throw err;
+            }
+            self._wsMessageEvents.emit('message', jsonStr);
+        });
+        this._ws.on('error', function() {
+            console.log('Could not connect to socket. Retrying..');
+            callback('Could not connect to socket. Retrying..');
+            self._ws.terminate();
+            setTimeout(function() {
+                self.connect(function(err) {});
+                return;
+            }, 1000);
+        });
+    };
+
+    startHeartbeatHandler() : void {
+        var self = this;
+        this._ws.on('pong', function() {
+            self._wsConnected = true;
+        });
+        var interval = setInterval(function ping() {
+            if(self._ws && !self._wsConnected) {
+                console.log('Connection to socket lost. Trying to reconnect...');
+                self.reconnect();
+                clearInterval(interval);
+                return;
+            }
+            self._wsConnected = false;
+            self._ws.ping('', false, true);
+        }, 30000);
+    };
+
+    reconnect() : void {
+        console.log('Reconnecting...');
+        this._ws.terminate();
+        this.connect(function(err) {});
+    };
+
 
 
 };

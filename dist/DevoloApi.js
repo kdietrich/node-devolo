@@ -1,8 +1,12 @@
 "use strict";
+var WebSocket = require('ws');
+var events_1 = require("events");
 var DevoloAPI = (function () {
     function DevoloAPI() {
         this._apiHost = 'www.mydevolo.com';
         this._apiVersion = '/v1';
+        this._wsConnected = false;
+        this._wsMessageEvents = new events_1.EventEmitter();
         if (DevoloAPI._instance) {
             throw new Error("Singleton...");
         }
@@ -212,6 +216,61 @@ var DevoloAPI = (function () {
             callback();
         }, true, 1, null, null, 'JSESSIONID=' + this._options.sessionid);
     };
+    ;
+    DevoloAPI.prototype.connect = function (callback) {
+        var self = this;
+        console.log('Trying to connect to socket.');
+        this._ws = new WebSocket('ws://' + this._options.centralHost + '/remote/events/?topics=com/prosyst/mbs/services/fim/FunctionalItemEvent/PROPERTY_CHANGED&filter=(|(GW_ID=1504013000000377)(!(GW_ID=*)))');
+        this._ws.on('open', function () {
+            console.log('Websocket open');
+            self._wsConnected = true;
+            self.startHeartbeatHandler();
+            callback();
+        });
+        this._ws.on('message', function (message) {
+            var jsonStr;
+            try {
+                jsonStr = JSON.parse(message);
+            }
+            catch (err) {
+                throw err;
+            }
+            self._wsMessageEvents.emit('message', jsonStr);
+        });
+        this._ws.on('error', function () {
+            console.log('Could not connect to socket. Retrying..');
+            callback('Could not connect to socket. Retrying..');
+            self._ws.terminate();
+            setTimeout(function () {
+                self.connect(function (err) { });
+                return;
+            }, 1000);
+        });
+    };
+    ;
+    DevoloAPI.prototype.startHeartbeatHandler = function () {
+        var self = this;
+        this._ws.on('pong', function () {
+            self._wsConnected = true;
+        });
+        var interval = setInterval(function ping() {
+            if (self._ws && !self._wsConnected) {
+                console.log('Connection to socket lost. Trying to reconnect...');
+                self.reconnect();
+                clearInterval(interval);
+                return;
+            }
+            self._wsConnected = false;
+            self._ws.ping('', false, true);
+        }, 30000);
+    };
+    ;
+    DevoloAPI.prototype.reconnect = function () {
+        console.log('Reconnecting...');
+        this._ws.terminate();
+        this.connect(function (err) { });
+    };
+    ;
     return DevoloAPI;
 }());
 DevoloAPI._instance = new DevoloAPI();

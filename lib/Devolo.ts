@@ -6,7 +6,7 @@ import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, Mult
 export class Devolo {
 
     public _options: DevoloOptions;
-    public version: string = '201702202047';
+    public version: string = '201707161504';
     private _api: DevoloAPI = DevoloAPI.getInstance();
 
     constructor(options: DevoloOptions, callback : (err: string, d?: Devolo) => void) {
@@ -23,7 +23,12 @@ export class Devolo {
                 if(err) {
                     callback(err); return;
                 }
-                callback(null, self);
+                self._api.connect(function(err) {
+                    if(err) {
+                        callback(err); return;
+                    }
+                    callback(null, self);
+                });
             });
         })
     };
@@ -345,19 +350,24 @@ export class Devolo {
                 if(err2) {
                     callback(err2); return;
                 }
-                scenes2Data.forEach(function(sceneData, index, array) {
+                if(scenes2Data) {
+                    scenes2Data.forEach(function(sceneData, index, array) {
 
-                    var scene = new Scene();
-                    scene.setParams(sceneData.UID,
-                                    sceneData.properties.itemName,
-                                    sceneData.properties.description);
-                    scenes.push(scene);
+                        var scene = new Scene();
+                        scene.setParams(sceneData.UID,
+                                        sceneData.properties.itemName,
+                                        sceneData.properties.description);
+                        scenes.push(scene);
 
-                    itemsProcessed++;
-                    if(itemsProcessed === array.length) {
-                        callback(null, scenes);
-                    }
-                });
+                        itemsProcessed++;
+                        if(itemsProcessed === array.length) {
+                            callback(null, scenes);
+                        }
+                    });
+                }
+                else {
+                    callback(null, []);
+                }
             });
         });
     };

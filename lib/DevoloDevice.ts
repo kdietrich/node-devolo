@@ -1,5 +1,6 @@
 import { DevoloAPI } from './DevoloApi';
 import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch } from './DevoloSensor';
+import { EventEmitter } from 'events';
 
 export class DeviceSettings {
     stateSwitchable: boolean = true;
@@ -23,6 +24,7 @@ export abstract class Device {
     lastActivity: number;
     sensors: Sensor[];
     settings: DeviceSettings;
+    events: EventEmitter = new EventEmitter();
 
     setParams(id: string, name: string, model: string, icon: string, zoneId: string, zone: string, batteryLevel: number, batteryLow: boolean, lastActivity: number, sensors: Sensor[], settings: DeviceSettings) {
         this.id = id;
@@ -36,6 +38,52 @@ export abstract class Device {
         this.lastActivity = lastActivity;
         this.sensors = sensors;
         this.settings = settings;
+    }
+
+    listen() : void {
+        var self = this;
+
+        var api:DevoloAPI = DevoloAPI.getInstance();
+        api._wsMessageEvents.on('message', function(jsonStr) {
+        //api._ws.on('message', function(message) {
+
+
+            if(jsonStr.properties.uid) {
+                var sensor = self.getSensorByID(jsonStr.properties.uid);
+                if(sensor) {
+                    if(jsonStr.properties['property.name']==='state') {
+                        self.onStateChanged(jsonStr.properties['property.value.new']);
+                    }
+                    else if(jsonStr.properties['property.name']==='currentValue') {
+                        self.onCurrentValueChanged(sensor.type, jsonStr.properties['property.value.new']);
+                    }
+                    else if(jsonStr.properties['property.name']==='totalValue') {
+                        self.onTotalValueChanged(sensor.type, jsonStr.properties['property.value.new']);
+                    }
+                    else if(jsonStr.properties['property.name']==='targetValue') {
+                        self.onTargetValueChanged(sensor.type, jsonStr.properties['property.value.new']);
+                    }
+                    else if(jsonStr.properties['property.name']==='sinceTime') {
+                        self.onSinceTimeChanged(sensor.type, jsonStr.properties['property.value.new']);
+                    }
+                    else if(jsonStr.properties['property.name']==='value') {
+                        self.onValueChanged(sensor.type, jsonStr.properties['property.value.new']);
+                    }
+                    else if(jsonStr.properties['property.name']==='batteryLevel') {
+                        self.onBatteryLevelChanged(jsonStr.properties['property.value.new']);
+                    }
+                    else if(jsonStr.properties['property.name']==='batteryLow') {
+                        self.onBatteryLowChanged(jsonStr.properties['property.value.new']);
+                    }
+                    else {
+                        console.log('COULDNT FIND PROPERTY:', jsonStr.properties['property.name'], sensor.type);
+                    }
+                }
+                else {
+                    console.log('COULDNT FIND SENSOR:', jsonStr.properties.uid);
+                }
+            }
+        });
     }
 
     turnOn(callback: (err?:string) => void) {
@@ -216,6 +264,50 @@ export abstract class Device {
         this.batteryLow = batteryLow;
     }
 
+    onStateChanged(state: number) : void {
+        var self = this;
+        this.setState(state, function(err) {
+            self.events.emit('onStateChanged', state);
+        });
+    }
+
+    onValueChanged(type: string, value: number) : void {
+        this.setValue(type, value);
+        this.events.emit('onValueChanged', type, value);
+    }
+
+    onCurrentValueChanged(type: string, value: number) : void {
+        this.setCurrentValue(type, value);
+        this.events.emit('onCurrentValueChanged', type, value);
+    }
+
+    onTotalValueChanged(type: string, value: number) : void {
+        this.setTotalValue(type, value);
+        this.events.emit('onTotalValueChanged', type, value);
+    }
+
+    onTargetValueChanged(type: string, value: number) : void {
+        var self = this;
+        this.setTargetValue(type, value, function(err) {
+            self.events.emit('onTargetValueChanged', type, value);
+        });
+    }
+
+    onSinceTimeChanged(type: string, value: number) : void {
+        this.setSinceTime(type, value);
+        this.events.emit('onSinceTimeChanged', type, value);
+    }
+
+    onBatteryLevelChanged(value: number) : void {
+        this.setBatteryLevel(value);
+        this.events.emit('onBatteryLevelChanged', value);
+    }
+
+    onBatteryLowChanged(value: boolean) : void {
+        this.setBatteryLow(value);
+        this.events.emit('onBatteryLowChanged', value);
+    }
+
     private getSensor(classs: any, type?: string) : Sensor {
         //console.log("hasSensor..");
         for(var i=0; i<this.sensors.length; i++) {
@@ -227,6 +319,14 @@ export abstract class Device {
             }
         }
         //console.log("..false");
+        return null;
+    }
+
+    private getSensorByID(id: string) : Sensor {
+        for(var i=0; i<this.sensors.length; i++) {
+            if(this.sensors[i].id === id)
+                return this.sensors[i];
+        }
         return null;
     }
 }

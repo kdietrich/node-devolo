@@ -6,6 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DevoloApi_1 = require("./DevoloApi");
 var DevoloSensor_1 = require("./DevoloSensor");
+var events_1 = require("events");
 var DeviceSettings = (function () {
     function DeviceSettings() {
         this.stateSwitchable = true;
@@ -18,6 +19,7 @@ var DeviceSettings = (function () {
 exports.DeviceSettings = DeviceSettings;
 var Device = (function () {
     function Device() {
+        this.events = new events_1.EventEmitter();
     }
     Device.prototype.setParams = function (id, name, model, icon, zoneId, zone, batteryLevel, batteryLow, lastActivity, sensors, settings) {
         this.id = id;
@@ -31,6 +33,48 @@ var Device = (function () {
         this.lastActivity = lastActivity;
         this.sensors = sensors;
         this.settings = settings;
+    };
+    Device.prototype.listen = function () {
+        var self = this;
+        var api = DevoloApi_1.DevoloAPI.getInstance();
+        api._wsMessageEvents.on('message', function (jsonStr) {
+            //api._ws.on('message', function(message) {
+            if (jsonStr.properties.uid) {
+                var sensor = self.getSensorByID(jsonStr.properties.uid);
+                if (sensor) {
+                    if (jsonStr.properties['property.name'] === 'state') {
+                        self.onStateChanged(jsonStr.properties['property.value.new']);
+                    }
+                    else if (jsonStr.properties['property.name'] === 'currentValue') {
+                        self.onCurrentValueChanged(sensor.type, jsonStr.properties['property.value.new']);
+                    }
+                    else if (jsonStr.properties['property.name'] === 'totalValue') {
+                        self.onTotalValueChanged(sensor.type, jsonStr.properties['property.value.new']);
+                    }
+                    else if (jsonStr.properties['property.name'] === 'targetValue') {
+                        self.onTargetValueChanged(sensor.type, jsonStr.properties['property.value.new']);
+                    }
+                    else if (jsonStr.properties['property.name'] === 'sinceTime') {
+                        self.onSinceTimeChanged(sensor.type, jsonStr.properties['property.value.new']);
+                    }
+                    else if (jsonStr.properties['property.name'] === 'value') {
+                        self.onValueChanged(sensor.type, jsonStr.properties['property.value.new']);
+                    }
+                    else if (jsonStr.properties['property.name'] === 'batteryLevel') {
+                        self.onBatteryLevelChanged(jsonStr.properties['property.value.new']);
+                    }
+                    else if (jsonStr.properties['property.name'] === 'batteryLow') {
+                        self.onBatteryLowChanged(jsonStr.properties['property.value.new']);
+                    }
+                    else {
+                        console.log('COULDNT FIND PROPERTY:', jsonStr.properties['property.name'], sensor.type);
+                    }
+                }
+                else {
+                    console.log('COULDNT FIND SENSOR:', jsonStr.properties.uid);
+                }
+            }
+        });
     };
     Device.prototype.turnOn = function (callback) {
         if (!this.settings.stateSwitchable) {
@@ -199,6 +243,42 @@ var Device = (function () {
     Device.prototype.setBatteryLow = function (batteryLow) {
         this.batteryLow = batteryLow;
     };
+    Device.prototype.onStateChanged = function (state) {
+        var self = this;
+        this.setState(state, function (err) {
+            self.events.emit('onStateChanged', state);
+        });
+    };
+    Device.prototype.onValueChanged = function (type, value) {
+        this.setValue(type, value);
+        this.events.emit('onValueChanged', type, value);
+    };
+    Device.prototype.onCurrentValueChanged = function (type, value) {
+        this.setCurrentValue(type, value);
+        this.events.emit('onCurrentValueChanged', type, value);
+    };
+    Device.prototype.onTotalValueChanged = function (type, value) {
+        this.setTotalValue(type, value);
+        this.events.emit('onTotalValueChanged', type, value);
+    };
+    Device.prototype.onTargetValueChanged = function (type, value) {
+        var self = this;
+        this.setTargetValue(type, value, function (err) {
+            self.events.emit('onTargetValueChanged', type, value);
+        });
+    };
+    Device.prototype.onSinceTimeChanged = function (type, value) {
+        this.setSinceTime(type, value);
+        this.events.emit('onSinceTimeChanged', type, value);
+    };
+    Device.prototype.onBatteryLevelChanged = function (value) {
+        this.setBatteryLevel(value);
+        this.events.emit('onBatteryLevelChanged', value);
+    };
+    Device.prototype.onBatteryLowChanged = function (value) {
+        this.setBatteryLow(value);
+        this.events.emit('onBatteryLowChanged', value);
+    };
     Device.prototype.getSensor = function (classs, type) {
         //console.log("hasSensor..");
         for (var i = 0; i < this.sensors.length; i++) {
@@ -210,6 +290,13 @@ var Device = (function () {
             }
         }
         //console.log("..false");
+        return null;
+    };
+    Device.prototype.getSensorByID = function (id) {
+        for (var i = 0; i < this.sensors.length; i++) {
+            if (this.sensors[i].id === id)
+                return this.sensors[i];
+        }
         return null;
     };
     return Device;

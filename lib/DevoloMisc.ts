@@ -1,4 +1,5 @@
 import { DevoloAPI } from './DevoloApi';
+import { EventEmitter } from 'events';
 
 export interface DevoloOptions {
     email: string;
@@ -27,12 +28,37 @@ export class Rule {
     name: string;
     description: string;
     enabled: boolean;
+    events: EventEmitter = new EventEmitter();
 
     setParams(id: string, name: string, description: string, enabled: boolean) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.enabled = enabled;
+    }
+
+    listen() : void {
+        var self = this;
+
+        var api:DevoloAPI = DevoloAPI.getInstance();
+        api._ws.on('message', function(message) {
+            var jsonStr;
+            try {
+                jsonStr = JSON.parse(message);
+            }
+            catch(err) {
+                throw err;
+            }
+
+            if(jsonStr.properties.uid) {
+                if(jsonStr.properties['property.name']==='enabled') {
+                    self.onEnabledChanged(jsonStr.properties['property.value.new']);
+                }
+                else {
+                    console.log('COULDNT FIND RULE PROPERTY:', jsonStr.properties['property.name']);
+                }
+            }
+        });
     }
 
     getEnabled() : boolean {
@@ -42,6 +68,13 @@ export class Rule {
     setEnabled(enabled: boolean, callback: (err: string) => void) {
         this.enabled = enabled;
         callback('');
+    }
+
+    onEnabledChanged(value: boolean) : void {
+        var self = this;
+        this.setEnabled(value, function() {
+            self.events.emit('onEnabledChanged', value);
+        });
     }
 }
 
