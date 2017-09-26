@@ -203,8 +203,13 @@ export class Devolo {
                         //find suitable device for sensor
                         var device = null;
                         for(var k=0; k<devices.length; k++) {
-                            if(item2.UID.indexOf(devices[k].id) > -1) {
+                            var deviceID = item2.UID;
+                            if(deviceID.indexOf('#') > -1) {
+                               deviceID = deviceID.substring(0, deviceID.indexOf('#'));
+                            }
+                            if(deviceID.endsWith(devices[k].id)) {
                                 device = devices[k];
+                                break;
                             }
                         }
 
