@@ -133,7 +133,7 @@ export class Devolo {
                 var item = items[i];
 //               console.log(item);
 
-                if(item.UID.indexOf('virtual:device') > -1) {
+                if(item.UID.indexOf('virtual:device') > -1 || item.properties.deviceModelUID == null) {
                     continue; //not supported yet
                 }
 

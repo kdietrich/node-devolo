@@ -136,7 +136,7 @@ var Devolo = (function () {
             for (var i = 0; i < items.length; i++) {
                 var item = items[i];
                 //               console.log(item);
-                if (item.UID.indexOf('virtual:device') > -1) {
+                if (item.UID.indexOf('virtual:device') > -1 || item.properties.deviceModelUID == null) {
                     continue; //not supported yet
                 }
                 var device;
