@@ -67,11 +67,9 @@ var Device = (function () {
                         self.onBatteryLowChanged(jsonStr.properties['property.value.new']);
                     }
                     else {
-                        console.log('COULDNT FIND PROPERTY:', jsonStr.properties['property.name'], sensor.type);
                     }
                 }
                 else {
-                    console.log('COULDNT FIND SENSOR:', jsonStr.properties.uid);
                 }
             }
         });

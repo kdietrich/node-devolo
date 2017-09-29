@@ -36,7 +36,6 @@ var Rule = (function () {
                     self.onEnabledChanged(jsonStr.properties['property.value.new']);
                 }
                 else {
-                    console.log('COULDNT FIND RULE PROPERTY:', jsonStr.properties['property.name']);
                 }
             }
         });

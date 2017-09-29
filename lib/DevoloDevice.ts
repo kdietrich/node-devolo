@@ -76,11 +76,11 @@ export abstract class Device {
                         self.onBatteryLowChanged(jsonStr.properties['property.value.new']);
                     }
                     else {
-                        console.log('COULDNT FIND PROPERTY:', jsonStr.properties['property.name'], sensor.type);
+                        //console.log('COULDNT FIND PROPERTY:', jsonStr.properties['property.name'], sensor.type);
                     }
                 }
                 else {
-                    console.log('COULDNT FIND SENSOR:', jsonStr.properties.uid);
+                    //console.log('COULDNT FIND SENSOR:', jsonStr.properties.uid);
                 }
             }
         });
