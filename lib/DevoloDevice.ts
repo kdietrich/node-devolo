@@ -339,3 +339,4 @@ export class MotionDevice extends Device { }
 export class ThermostatValveDevice extends Device { }
 export class SmokeDetectorDevice extends Device { }
 export class RoomThermostatDevice extends Device { }
+export class ShutterDevice extends Device { }

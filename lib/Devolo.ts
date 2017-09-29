@@ -1,6 +1,6 @@
 import { DevoloOptions, Zone, Rule, Scene } from './DevoloMisc';
 import { DevoloAPI } from './DevoloApi';
-import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, ThermostatValveDevice, SmokeDetectorDevice, RoomThermostatDevice } from './DevoloDevice';
+import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, ThermostatValveDevice, SmokeDetectorDevice, RoomThermostatDevice, ShutterDevice } from './DevoloDevice';
 import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch } from './DevoloSensor';
 
 export class Devolo {
@@ -162,6 +162,9 @@ export class Devolo {
                 else if(item.properties.deviceModelUID.indexOf('Room:Thermostat') > -1) {
                     device = new RoomThermostatDevice();
                 }
+                else if(item.properties.deviceModelUID.indexOf('Shutter') > -1) {
+                    device = new ShutterDevice();
+                }
                 else {
                     console.log('Device', item.properties.deviceModelUID, 'is not supported (yet). Open an issue on github and ask for adding it.');
                     continue;
@@ -255,7 +258,7 @@ export class Devolo {
                                     item2.properties.value
                                 ));
                             }
-                            else if(item2.UID.indexOf('MultiLevelSwitch') > -1) {
+                            else if(item2.UID.indexOf('MultiLevelSwitch') > -1 || item2.UID.indexOf('Blinds') > -1) {
                                 device.sensors.push(new MultiLevelSwitch(
                                     item2.UID,
                                     item2.properties.switchType,

@@ -164,6 +164,9 @@ var Devolo = (function () {
                 else if (item.properties.deviceModelUID.indexOf('Room:Thermostat') > -1) {
                     device = new DevoloDevice_1.RoomThermostatDevice();
                 }
+                else if (item.properties.deviceModelUID.indexOf('Shutter') > -1) {
+                    device = new DevoloDevice_1.ShutterDevice();
+                }
                 else {
                     console.log('Device', item.properties.deviceModelUID, 'is not supported (yet). Open an issue on github and ask for adding it.');
                     continue;
@@ -221,7 +224,7 @@ var Devolo = (function () {
                             else if (item2.UID.indexOf('MultiLevelSensor') > -1 || item2.UID.indexOf('HumidityBarZone') > -1 || item2.UID.indexOf('DewpointSensor') > -1 || item2.UID.indexOf('HumidityBarValue') > -1) {
                                 device.sensors.push(new DevoloSensor_1.MultiLevelSensor(item2.UID, item2.properties.sensorType, item2.properties.value));
                             }
-                            else if (item2.UID.indexOf('MultiLevelSwitch') > -1) {
+                            else if (item2.UID.indexOf('MultiLevelSwitch') > -1 || item2.UID.indexOf('Blinds') > -1) {
                                 device.sensors.push(new DevoloSensor_1.MultiLevelSwitch(item2.UID, item2.properties.switchType, item2.properties.value, item2.properties.targetValue, item2.properties.min, item2.properties.max));
                             }
                         }

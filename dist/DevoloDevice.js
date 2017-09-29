@@ -366,3 +366,11 @@ var RoomThermostatDevice = (function (_super) {
     return RoomThermostatDevice;
 }(Device));
 exports.RoomThermostatDevice = RoomThermostatDevice;
+var ShutterDevice = (function (_super) {
+    __extends(ShutterDevice, _super);
+    function ShutterDevice() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ShutterDevice;
+}(Device));
+exports.ShutterDevice = ShutterDevice;
