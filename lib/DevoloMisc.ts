@@ -1,6 +1,8 @@
 import { DevoloAPI } from './DevoloApi';
 import { EventEmitter } from 'events';
 
+EventEmitter.defaultMaxListeners = 100;
+
 export interface DevoloOptions {
     email: string;
     password: string;
