@@ -1,7 +1,7 @@
 import { DevoloOptions, Zone, Rule, Scene } from './DevoloMisc';
 import { DevoloAPI } from './DevoloApi';
-import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, ThermostatValveDevice, SmokeDetectorDevice, RoomThermostatDevice, ShutterDevice } from './DevoloDevice';
-import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch } from './DevoloSensor';
+import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, ThermostatValveDevice, SmokeDetectorDevice, RoomThermostatDevice, ShutterDevice, WallSwitchDevice } from './DevoloDevice';
+import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch, RemoteControl } from './DevoloSensor';
 
 export class Devolo {
 
@@ -162,6 +162,9 @@ export class Devolo {
                 else if(item.properties.deviceModelUID.indexOf('Room:Thermostat') > -1) {
                     device = new RoomThermostatDevice();
                 }
+                else if(item.properties.deviceModelUID.indexOf('Wall:Control') > -1) {
+                    device = new WallSwitchDevice();
+                }
                 else if(item.properties.deviceModelUID.indexOf('Shutter') > -1) {
                     device = new ShutterDevice();
                 }
@@ -268,7 +271,14 @@ export class Devolo {
                                     item2.properties.max
                                 ));
                             }
-
+                            else if(item2.UID.indexOf('RemoteControl') > -1) {
+                                device.sensors.push(new RemoteControl(
+                                    item2.UID,
+                                    'RemoteControl',
+                                    item2.properties.keyCount,
+                                    item2.properties.keyPressed
+                                ));
+                            }
                         }
                     }
                 }

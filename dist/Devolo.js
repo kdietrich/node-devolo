@@ -164,6 +164,9 @@ var Devolo = (function () {
                 else if (item.properties.deviceModelUID.indexOf('Room:Thermostat') > -1) {
                     device = new DevoloDevice_1.RoomThermostatDevice();
                 }
+                else if (item.properties.deviceModelUID.indexOf('Wall:Control') > -1) {
+                    device = new DevoloDevice_1.WallSwitchDevice();
+                }
                 else if (item.properties.deviceModelUID.indexOf('Shutter') > -1) {
                     device = new DevoloDevice_1.ShutterDevice();
                 }
@@ -226,6 +229,9 @@ var Devolo = (function () {
                             }
                             else if (item2.UID.indexOf('MultiLevelSwitch') > -1 || item2.UID.indexOf('Blinds') > -1) {
                                 device.sensors.push(new DevoloSensor_1.MultiLevelSwitch(item2.UID, item2.properties.switchType, item2.properties.value, item2.properties.targetValue, item2.properties.min, item2.properties.max));
+                            }
+                            else if (item2.UID.indexOf('RemoteControl') > -1) {
+                                device.sensors.push(new DevoloSensor_1.RemoteControl(item2.UID, 'RemoteControl', item2.properties.keyCount, item2.properties.keyPressed));
                             }
                         }
                     }

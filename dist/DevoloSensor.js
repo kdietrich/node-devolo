@@ -66,3 +66,14 @@ var MultiLevelSwitch = (function (_super) {
     return MultiLevelSwitch;
 }(MultiLevelSensor));
 exports.MultiLevelSwitch = MultiLevelSwitch;
+var RemoteControl = (function (_super) {
+    __extends(RemoteControl, _super);
+    function RemoteControl(id, type, keyCount, keyPressed) {
+        var _this = _super.call(this, id, type) || this;
+        _this.keyCount = keyCount;
+        _this.keyPressed = keyPressed;
+        return _this;
+    }
+    return RemoteControl;
+}(Sensor));
+exports.RemoteControl = RemoteControl;

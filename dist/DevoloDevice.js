@@ -66,7 +66,11 @@ var Device = (function () {
                     else if (jsonStr.properties['property.name'] === 'batteryLow') {
                         self.onBatteryLowChanged(jsonStr.properties['property.value.new']);
                     }
+                    else if (jsonStr.properties['property.name'] === 'keyPressed') {
+                        self.onKeyPressedChanged(jsonStr.properties['property.value.new']);
+                    }
                     else {
+                        console.log('COULDNT FIND PROPERTY:', jsonStr.properties['property.name'], sensor.type);
                     }
                 }
                 else {
@@ -241,6 +245,18 @@ var Device = (function () {
     Device.prototype.setBatteryLow = function (batteryLow) {
         this.batteryLow = batteryLow;
     };
+    Device.prototype.setKeyPressed = function (keyPressed) {
+        var sensor = this.getSensor(DevoloSensor_1.RemoteControl);
+        if (!sensor)
+            throw new Error('Device has no suitable sensor.');
+        sensor.keyPressed = keyPressed;
+    };
+    Device.prototype.getKeyCount = function () {
+        var sensor = this.getSensor(DevoloSensor_1.RemoteControl);
+        if (!sensor)
+            throw new Error('Device has no suitable sensor.');
+        return sensor.keyCount;
+    };
     Device.prototype.onStateChanged = function (state) {
         var self = this;
         this.setState(state, function (err) {
@@ -276,6 +292,10 @@ var Device = (function () {
     Device.prototype.onBatteryLowChanged = function (value) {
         this.setBatteryLow(value);
         this.events.emit('onBatteryLowChanged', value);
+    };
+    Device.prototype.onKeyPressedChanged = function (value) {
+        this.setKeyPressed(value);
+        this.events.emit('onKeyPressedChanged', value);
     };
     Device.prototype.getSensor = function (classs, type) {
         //console.log("hasSensor..");
@@ -372,3 +392,11 @@ var ShutterDevice = (function (_super) {
     return ShutterDevice;
 }(Device));
 exports.ShutterDevice = ShutterDevice;
+var WallSwitchDevice = (function (_super) {
+    __extends(WallSwitchDevice, _super);
+    function WallSwitchDevice() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return WallSwitchDevice;
+}(Device));
+exports.WallSwitchDevice = WallSwitchDevice;

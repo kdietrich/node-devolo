@@ -54,3 +54,13 @@ export class MultiLevelSwitch extends MultiLevelSensor {
         this.max = max;
     }
 }
+
+export class RemoteControl extends Sensor {
+    keyCount: number;
+    keyPressed: number;
+    constructor(id: string, type: string, keyCount: number, keyPressed: number) {
+        super(id, type);
+        this.keyCount = keyCount;
+        this.keyPressed = keyPressed;
+    }
+}

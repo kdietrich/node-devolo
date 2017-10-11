@@ -1,5 +1,5 @@
 import { DevoloAPI } from './DevoloApi';
-import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch } from './DevoloSensor';
+import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch, RemoteControl } from './DevoloSensor';
 import { EventEmitter } from 'events';
 
 export class DeviceSettings {
@@ -74,6 +74,9 @@ export abstract class Device {
                     }
                     else if(jsonStr.properties['property.name']==='batteryLow') {
                         self.onBatteryLowChanged(jsonStr.properties['property.value.new']);
+                    }
+                    else if(jsonStr.properties['property.name']==='keyPressed') {
+                        self.onKeyPressedChanged(jsonStr.properties['property.value.new']);
                     }
                     else {
                         //console.log('COULDNT FIND PROPERTY:', jsonStr.properties['property.name'], sensor.type);
@@ -264,6 +267,20 @@ export abstract class Device {
         this.batteryLow = batteryLow;
     }
 
+    setKeyPressed(keyPressed: number) : void {
+        var sensor: RemoteControl = this.getSensor(RemoteControl) as RemoteControl;
+        if(!sensor)
+            throw new Error('Device has no suitable sensor.');
+        sensor.keyPressed = keyPressed;
+    }
+
+    getKeyCount() : number {
+        var sensor: RemoteControl = this.getSensor(RemoteControl) as RemoteControl;
+        if(!sensor)
+            throw new Error('Device has no suitable sensor.');
+        return sensor.keyCount;
+    }
+
     onStateChanged(state: number) : void {
         var self = this;
         this.setState(state, function(err) {
@@ -308,6 +325,11 @@ export abstract class Device {
         this.events.emit('onBatteryLowChanged', value);
     }
 
+    onKeyPressedChanged(value: number) : void {
+        this.setKeyPressed(value);
+        this.events.emit('onKeyPressedChanged', value);
+    }
+
     private getSensor(classs: any, type?: string) : Sensor {
         //console.log("hasSensor..");
         for(var i=0; i<this.sensors.length; i++) {
@@ -340,3 +362,4 @@ export class ThermostatValveDevice extends Device { }
 export class SmokeDetectorDevice extends Device { }
 export class RoomThermostatDevice extends Device { }
 export class ShutterDevice extends Device { }
+export class WallSwitchDevice extends Device { }
