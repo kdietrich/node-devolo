@@ -363,3 +363,4 @@ export class SmokeDetectorDevice extends Device { }
 export class RoomThermostatDevice extends Device { }
 export class ShutterDevice extends Device { }
 export class WallSwitchDevice extends Device { }
+export class RemoteControlDevice extends Device { }

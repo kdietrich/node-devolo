@@ -70,7 +70,6 @@ var Device = (function () {
                         self.onKeyPressedChanged(jsonStr.properties['property.value.new']);
                     }
                     else {
-                        console.log('COULDNT FIND PROPERTY:', jsonStr.properties['property.name'], sensor.type);
                     }
                 }
                 else {
@@ -400,3 +399,11 @@ var WallSwitchDevice = (function (_super) {
     return WallSwitchDevice;
 }(Device));
 exports.WallSwitchDevice = WallSwitchDevice;
+var RemoteControlDevice = (function (_super) {
+    __extends(RemoteControlDevice, _super);
+    function RemoteControlDevice() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return RemoteControlDevice;
+}(Device));
+exports.RemoteControlDevice = RemoteControlDevice;

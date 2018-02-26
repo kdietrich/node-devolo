@@ -167,6 +167,9 @@ var Devolo = (function () {
                 else if (item.properties.deviceModelUID.indexOf('Wall:Control') > -1) {
                     device = new DevoloDevice_1.WallSwitchDevice();
                 }
+                else if (item.properties.deviceModelUID.indexOf('Remote:Control') > -1) {
+                    device = new DevoloDevice_1.RemoteControlDevice();
+                }
                 else if (item.properties.deviceModelUID.indexOf('Shutter') > -1) {
                     device = new DevoloDevice_1.ShutterDevice();
                 }
@@ -335,6 +338,48 @@ var Devolo = (function () {
         });
     };
     ;
+    Devolo.prototype.outputDebugLog = function (callback) {
+        var self = this;
+        self._api.fetchItems(["devolo.Grouping"], function (err, zones) {
+            if (err) {
+                callback(err);
+                return;
+            }
+            console.log('###### ZONES START ######');
+            console.log(JSON.stringify(zones, null, 4));
+            console.log('###### ZONES END ######');
+            var deviceIDs = [];
+            for (var i = 0; i < zones[0].properties.zones.length; i++) {
+                deviceIDs = deviceIDs.concat(zones[0].properties.zones[i].deviceUIDs);
+            }
+            self._api.fetchItems(deviceIDs, function (err, devices) {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+                console.log('###### DEVICES START ######');
+                console.log(JSON.stringify(devices, null, 4));
+                console.log('###### DEVICES END ######');
+                var sensorIDs = [];
+                for (var i = 0; i < devices.length; i++) {
+                    sensorIDs = sensorIDs.concat(devices[i].properties.elementUIDs);
+                    if (devices[i].properties.deviceModelUID.indexOf('Wall:Plug:Switch:and:Meter') > -1) {
+                        sensorIDs.push('ps.' + devices[i].UID);
+                    }
+                }
+                self._api.fetchItems(sensorIDs, function (err, sensors) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    console.log('###### SENSORS START ######');
+                    console.log(JSON.stringify(sensors, null, 4));
+                    console.log('###### SENSORS END ######');
+                    callback();
+                });
+            });
+        });
+    };
     return Devolo;
 }());
 exports.Devolo = Devolo;
