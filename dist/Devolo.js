@@ -363,8 +363,10 @@ var Devolo = (function () {
                 var sensorIDs = [];
                 for (var i = 0; i < devices.length; i++) {
                     sensorIDs = sensorIDs.concat(devices[i].properties.elementUIDs);
-                    if (devices[i].properties.deviceModelUID.indexOf('Wall:Plug:Switch:and:Meter') > -1) {
-                        sensorIDs.push('ps.' + devices[i].UID);
+                    if (devices[i].properties.deviceModelUID) {
+                        if (devices[i].properties.deviceModelUID.indexOf('Wall:Plug:Switch:and:Meter') > -1) {
+                            sensorIDs.push('ps.' + devices[i].UID);
+                        }
                     }
                 }
                 self._api.fetchItems(sensorIDs, function (err, sensors) {
