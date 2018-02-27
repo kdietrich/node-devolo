@@ -32,7 +32,7 @@ var Rule = (function () {
             catch (err) {
                 throw err;
             }
-            if (jsonStr.properties.uid) {
+            if (jsonStr.properties.uid && jsonStr.properties.uid.replace('ServiceControl', 'Service') == self.id) {
                 if (jsonStr.properties['property.name'] === 'enabled') {
                     self.onEnabledChanged(jsonStr.properties['property.value.new']);
                 }

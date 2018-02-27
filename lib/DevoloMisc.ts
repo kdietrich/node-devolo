@@ -52,7 +52,7 @@ export class Rule {
                 throw err;
             }
 
-            if(jsonStr.properties.uid) {
+            if(jsonStr.properties.uid && jsonStr.properties.uid.replace('ServiceControl', 'Service')==self.id) {
                 if(jsonStr.properties['property.name']==='enabled') {
                     self.onEnabledChanged(jsonStr.properties['property.value.new']);
                 }
@@ -78,6 +78,7 @@ export class Rule {
             self.events.emit('onEnabledChanged', value);
         });
     }
+
 }
 
 export class Scene {

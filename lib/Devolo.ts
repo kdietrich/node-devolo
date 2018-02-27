@@ -338,15 +338,14 @@ export class Devolo {
                         var element = elements[i];
                         //find suitable rule for sensor
                         var rule = null;
-                        for(var i=0; i<rules.length; i++) {
-                            var id = rules[i].id.replace('Service', 'ServiceControl');
-                            if(element.UID.indexOf(id) > -1) {
-                                rule = rules[i];
+                        for(var j=0; j<rules.length; j++) {
+                            var id = rules[j].id.replace('Service', 'ServiceControl');
+                            if(element.UID == id) {
+                                rule = rules[j];
                             }
                         }
                         rule.enabled = element.properties.enabled;
                     }
-
                     callback(null, rules);
                 });
 
