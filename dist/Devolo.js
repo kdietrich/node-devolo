@@ -369,6 +369,10 @@ var Devolo = (function () {
                         }
                     }
                 }
+                var settingsIDs = [];
+                for (var i = 0; i < devices.length; i++) {
+                    settingsIDs = settingsIDs.concat(devices[i].properties.settingUIDs);
+                }
                 self._api.fetchItems(sensorIDs, function (err, sensors) {
                     if (err) {
                         callback(err);
@@ -377,7 +381,16 @@ var Devolo = (function () {
                     console.log('###### SENSORS START ######');
                     console.log(JSON.stringify(sensors, null, 4));
                     console.log('###### SENSORS END ######');
-                    callback();
+                    self._api.fetchItems(settingsIDs, function (err, settings) {
+                        if (err) {
+                            callback(err);
+                            return;
+                        }
+                        console.log('###### SETTINGS START ######');
+                        console.log(JSON.stringify(settings, null, 4));
+                        console.log('###### SETTINGS END ######');
+                        callback();
+                    });
                 });
             });
         });
