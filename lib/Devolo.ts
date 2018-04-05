@@ -1,6 +1,6 @@
 import { DevoloOptions, Zone, Rule, Scene } from './DevoloMisc';
 import { DevoloAPI } from './DevoloApi';
-import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, ThermostatValveDevice, SmokeDetectorDevice, RoomThermostatDevice, ShutterDevice, WallSwitchDevice, RemoteControlDevice } from './DevoloDevice';
+import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, ThermostatValveDevice, SmokeDetectorDevice, RoomThermostatDevice, ShutterDevice, WallSwitchDevice, RemoteControlDevice, SirenDevice } from './DevoloDevice';
 import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch, RemoteControl } from './DevoloSensor';
 
 export class Devolo {
@@ -167,6 +167,9 @@ export class Devolo {
                 }
                 else if(item.properties.deviceModelUID.indexOf('Remote:Control') > -1) {
                     device = new RemoteControlDevice();
+                }
+                else if(item.properties.deviceModelUID.indexOf('Siren') > -1) {
+                    device = new SirenDevice();
                 }
                 else if(item.properties.deviceModelUID.indexOf('Shutter') > -1) {
                     device = new ShutterDevice();

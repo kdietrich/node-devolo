@@ -170,6 +170,9 @@ var Devolo = (function () {
                 else if (item.properties.deviceModelUID.indexOf('Remote:Control') > -1) {
                     device = new DevoloDevice_1.RemoteControlDevice();
                 }
+                else if (item.properties.deviceModelUID.indexOf('Siren') > -1) {
+                    device = new DevoloDevice_1.SirenDevice();
+                }
                 else if (item.properties.deviceModelUID.indexOf('Shutter') > -1) {
                     device = new DevoloDevice_1.ShutterDevice();
                 }

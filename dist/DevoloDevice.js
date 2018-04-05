@@ -407,3 +407,11 @@ var RemoteControlDevice = (function (_super) {
     return RemoteControlDevice;
 }(Device));
 exports.RemoteControlDevice = RemoteControlDevice;
+var SirenDevice = (function (_super) {
+    __extends(SirenDevice, _super);
+    function SirenDevice() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return SirenDevice;
+}(Device));
+exports.SirenDevice = SirenDevice;
