@@ -365,3 +365,5 @@ export class ShutterDevice extends Device { }
 export class WallSwitchDevice extends Device { }
 export class RemoteControlDevice extends Device { }
 export class SirenDevice extends Device { }
+export class RelayDevice extends Device { }
+export class DimmerDevice extends Device { }

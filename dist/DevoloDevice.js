@@ -415,3 +415,19 @@ var SirenDevice = (function (_super) {
     return SirenDevice;
 }(Device));
 exports.SirenDevice = SirenDevice;
+var RelayDevice = (function (_super) {
+    __extends(RelayDevice, _super);
+    function RelayDevice() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return RelayDevice;
+}(Device));
+exports.RelayDevice = RelayDevice;
+var DimmerDevice = (function (_super) {
+    __extends(DimmerDevice, _super);
+    function DimmerDevice() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return DimmerDevice;
+}(Device));
+exports.DimmerDevice = DimmerDevice;

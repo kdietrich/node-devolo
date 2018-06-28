@@ -1,6 +1,6 @@
 import { DevoloOptions, Zone, Rule, Scene } from './DevoloMisc';
 import { DevoloAPI } from './DevoloApi';
-import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, ThermostatValveDevice, SmokeDetectorDevice, RoomThermostatDevice, ShutterDevice, WallSwitchDevice, RemoteControlDevice, SirenDevice } from './DevoloDevice';
+import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, ThermostatValveDevice, SmokeDetectorDevice, RoomThermostatDevice, ShutterDevice, WallSwitchDevice, RemoteControlDevice, SirenDevice, RelayDevice, DimmerDevice } from './DevoloDevice';
 import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch, RemoteControl } from './DevoloSensor';
 
 export class Devolo {
@@ -174,6 +174,12 @@ export class Devolo {
                 else if(item.properties.deviceModelUID.indexOf('Shutter') > -1) {
                     device = new ShutterDevice();
                 }
+                else if(item.properties.deviceModelUID.indexOf('Relay') > -1) {
+                    device = new RelayDevice();
+                }
+                else if(item.properties.deviceModelUID.indexOf('Dimmer') > -1) {
+                    device = new DimmerDevice();
+                }
                 else {
                     console.log('Device', item.properties.deviceModelUID, 'is not supported (yet). Open an issue on github and ask for adding it.');
                     continue;
@@ -267,7 +273,7 @@ export class Devolo {
                                     item2.properties.value
                                 ));
                             }
-                            else if(item2.UID.indexOf('MultiLevelSwitch') > -1 || item2.UID.indexOf('Blinds') > -1) {
+                            else if(item2.UID.indexOf('MultiLevelSwitch') > -1 || item2.UID.indexOf('Blinds') > -1 || item2.UID.indexOf('Dimmer') > -1) {
                                 device.sensors.push(new MultiLevelSwitch(
                                     item2.UID,
                                     item2.properties.switchType,
