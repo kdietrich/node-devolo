@@ -220,7 +220,7 @@ var DevoloAPI = (function () {
     DevoloAPI.prototype.connect = function (callback) {
         var self = this;
         console.log('Trying to connect to socket.');
-        this._ws = new WebSocket('ws://' + this._options.centralHost + '/remote/events/?topics=com/prosyst/mbs/services/fim/FunctionalItemEvent/PROPERTY_CHANGED&filter=(|(GW_ID=1504013000000377)(!(GW_ID=*)))');
+        this._ws = new WebSocket('ws://' + this._options.centralHost + '/remote/events/?topics=com/prosyst/mbs/services/fim/FunctionalItemEvent/PROPERTY_CHANGED');
         this._ws.on('open', function () {
             console.log('Websocket open');
             self._wsConnected = true;
@@ -252,6 +252,10 @@ var DevoloAPI = (function () {
         var self = this;
         this._ws.on('pong', function () {
             self._wsConnected = true;
+        });
+        this._ws.on('close', function () {
+            console.log('Socket closed by central unit. Trying to reconnect...');
+            self.reconnect();
         });
         var interval = setInterval(function ping() {
             if (self._ws && !self._wsConnected) {
