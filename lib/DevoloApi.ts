@@ -10,6 +10,7 @@ export class DevoloAPI {
     private _apiVersion:string ='/v1';
     private _options: DevoloOptions;
     public _ws; //wrong visibility
+    private _interval;
     private _wsConnected:boolean = false;
     public _wsMessageEvents: EventEmitter = new EventEmitter();
 
@@ -240,14 +241,17 @@ export class DevoloAPI {
             self._wsConnected = true;
         });
         this._ws.on('close', function() {
-            console.log('Socket closed by central unit. Trying to reconnect...');
-            self.reconnect();
+            if(self._wsConnected) {
+                console.log('Socket closed by central unit. Trying to reconnect...');
+                self.reconnect();
+            }
         });
-        var interval = setInterval(function ping() {
+        clearInterval(this._interval);
+        this._interval = setInterval(function ping() {
             if(self._ws && !self._wsConnected) {
                 console.log('Connection to socket lost. Trying to reconnect...');
                 self.reconnect();
-                clearInterval(interval);
+                clearInterval(this._interval);
                 return;
             }
             self._wsConnected = false;
