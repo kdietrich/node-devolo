@@ -43,14 +43,7 @@ export class Rule {
         var self = this;
 
         var api:DevoloAPI = DevoloAPI.getInstance();
-        api._ws.on('message', function(message) {
-            var jsonStr;
-            try {
-                jsonStr = JSON.parse(message);
-            }
-            catch(err) {
-                throw err;
-            }
+        api._wsMessageEvents.on('message', function(jsonStr) {
 
             if(jsonStr.properties.uid && jsonStr.properties.uid.replace('ServiceControl', 'Service')==self.id) {
                 if(jsonStr.properties['property.name']==='enabled') {

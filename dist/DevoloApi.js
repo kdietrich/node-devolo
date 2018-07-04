@@ -254,10 +254,9 @@ var DevoloAPI = (function () {
             self._wsConnected = true;
         });
         this._ws.on('close', function () {
-            if (self._wsConnected) {
-                console.log('Socket closed by central unit. Trying to reconnect...');
-                self.reconnect();
-            }
+            console.log('Socket closed by central unit. Trying to reconnect...');
+            clearInterval(self._interval);
+            self.reconnect();
         });
         clearInterval(this._interval);
         this._interval = setInterval(function ping() {

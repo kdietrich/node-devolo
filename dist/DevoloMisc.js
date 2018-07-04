@@ -24,14 +24,7 @@ var Rule = (function () {
     Rule.prototype.listen = function () {
         var self = this;
         var api = DevoloApi_1.DevoloAPI.getInstance();
-        api._ws.on('message', function (message) {
-            var jsonStr;
-            try {
-                jsonStr = JSON.parse(message);
-            }
-            catch (err) {
-                throw err;
-            }
+        api._wsMessageEvents.on('message', function (jsonStr) {
             if (jsonStr.properties.uid && jsonStr.properties.uid.replace('ServiceControl', 'Service') == self.id) {
                 if (jsonStr.properties['property.name'] === 'enabled') {
                     self.onEnabledChanged(jsonStr.properties['property.value.new']);
