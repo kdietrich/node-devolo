@@ -180,7 +180,7 @@ export class DevoloAPI {
         };
         this.call('POST', '/remote/json-rpc', data, function(err, res: any) {
             if(!callback) return;
-            if(err) { callback(err); return; }
+            if(err || !res) { callback(err); return; }
             if(res.error) { callback(res.error.message); return; }
             if(!res.result || !res.result.items) { callback('Items missing at device ' + deviceids + ' > ' + res); return; }
             callback(null, res.result.items);
@@ -240,22 +240,22 @@ export class DevoloAPI {
         this._ws.on('pong', function() {
             self._wsConnected = true;
         });
-        this._ws.on('close', function() {
-            console.log('Socket closed by central unit. Trying to reconnect...');
-            clearInterval(self._interval);
+        setTimeout(function() {
+            console.log('Force closing socket after 25 minutes. Trying to reconnect...');
+            clearInterval(this._interval);
             self.reconnect();
-        });
+        }, 1500000);
         clearInterval(this._interval);
         this._interval = setInterval(function ping() {
             if(self._ws && !self._wsConnected) {
                 console.log('Connection to socket lost. Trying to reconnect...');
-                self.reconnect();
                 clearInterval(this._interval);
+                self.reconnect();
                 return;
             }
             self._wsConnected = false;
             self._ws.ping('', false, true);
-        }, 30000);
+        }, 10000);
     };
 
     reconnect() : void {

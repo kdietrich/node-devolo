@@ -86,10 +86,12 @@ export class Devolo {
                 callback(err); return;
             }
             var zones: Zone[] = [];
-            for(var i=0; i<items.length; i++) {
-                for(var j=0; j<items[i].properties.zones.length; j++) {
-                    var zone = new Zone(items[i].properties.zones[j].id, items[i].properties.zones[j].name, items[i].properties.zones[j].deviceUIDs);
-                    zones.push(zone);
+            if(items) {
+                for(var i=0; i<items.length; i++) {
+                    for(var j=0; j<items[i].properties.zones.length; j++) {
+                        var zone = new Zone(items[i].properties.zones[j].id, items[i].properties.zones[j].name, items[i].properties.zones[j].deviceUIDs);
+                        zones.push(zone);
+                    }
                 }
             }
             callback(null, zones);
