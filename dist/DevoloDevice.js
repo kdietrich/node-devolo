@@ -42,20 +42,21 @@ var Device = (function () {
             if (jsonStr.properties.uid) {
                 var sensor = self.getSensorByID(jsonStr.properties.uid);
                 if (sensor) {
+                    var num = parseInt(sensor.id.split("#").pop());
                     if (jsonStr.properties['property.name'] === 'state') {
-                        self.onStateChanged(jsonStr.properties['property.value.new']);
+                        self.onStateChanged(jsonStr.properties['property.value.new'], num);
                     }
                     else if (jsonStr.properties['property.name'] === 'currentValue') {
-                        self.onCurrentValueChanged(sensor.type, jsonStr.properties['property.value.new']);
+                        self.onCurrentValueChanged(sensor.type, jsonStr.properties['property.value.new'], num);
                     }
                     else if (jsonStr.properties['property.name'] === 'totalValue') {
-                        self.onTotalValueChanged(sensor.type, jsonStr.properties['property.value.new']);
+                        self.onTotalValueChanged(sensor.type, jsonStr.properties['property.value.new'], num);
                     }
                     else if (jsonStr.properties['property.name'] === 'targetValue') {
                         self.onTargetValueChanged(sensor.type, jsonStr.properties['property.value.new']);
                     }
                     else if (jsonStr.properties['property.name'] === 'sinceTime') {
-                        self.onSinceTimeChanged(sensor.type, jsonStr.properties['property.value.new']);
+                        self.onSinceTimeChanged(sensor.type, jsonStr.properties['property.value.new'], num);
                     }
                     else if (jsonStr.properties['property.name'] === 'value') {
                         self.onValueChanged(sensor.type, jsonStr.properties['property.value.new']);
@@ -77,28 +78,30 @@ var Device = (function () {
             }
         });
     };
-    Device.prototype.turnOn = function (callback) {
+    Device.prototype.turnOn = function (callback, num) {
         if (!this.settings.stateSwitchable) {
             callback('Switching of device is disabled.');
             return;
         }
-        this.setState(1, callback, true);
+        this.setState(1, callback, true, num);
     };
-    Device.prototype.turnOff = function (callback) {
+    Device.prototype.turnOff = function (callback, num) {
         //        console.log("turnoff");
         if (!this.settings.stateSwitchable) {
             callback('Switching of device is disabled.');
             return;
         }
-        this.setState(0, callback, true);
+        this.setState(0, callback, true, num);
     };
-    Device.prototype.setState = function (state, callback, useAPI) {
+    Device.prototype.setState = function (state, callback, useAPI, num) {
         if (useAPI === void 0) { useAPI = false; }
         //        console.log("setState");
         var sendViaAPI = useAPI;
-        var sensor = this.getSensor(DevoloSensor_1.BinarySwitch);
+        if (!num)
+            num = null;
+        var sensor = this.getSensor(DevoloSensor_1.BinarySwitch, null, num);
         if (!sensor) {
-            sensor = this.getSensor(DevoloSensor_1.BinarySensor);
+            sensor = this.getSensor(DevoloSensor_1.BinarySensor, null, num);
             if (!sensor) {
                 callback('Device has no suitable sensor.');
                 return;
@@ -126,11 +129,11 @@ var Device = (function () {
             callback(null);
         }
     };
-    Device.prototype.getState = function () {
+    Device.prototype.getState = function (num) {
         //        console.log("getState");
-        var sensor = this.getSensor(DevoloSensor_1.BinarySwitch);
+        var sensor = this.getSensor(DevoloSensor_1.BinarySwitch, null, num);
         if (!sensor) {
-            sensor = this.getSensor(DevoloSensor_1.BinarySensor);
+            sensor = this.getSensor(DevoloSensor_1.BinarySensor, null, num);
             if (!sensor)
                 throw new Error('Device has no suitable sensor.');
         }
@@ -193,9 +196,9 @@ var Device = (function () {
             callback(null);
         }
     };
-    Device.prototype.getCurrentValue = function (type) {
+    Device.prototype.getCurrentValue = function (type, num) {
         //        console.log("getCurrentValue");
-        var sensor = this.getSensor(DevoloSensor_1.MeterSensor, type);
+        var sensor = this.getSensor(DevoloSensor_1.MeterSensor, type, num);
         if (!sensor)
             throw new Error('Device has no suitable sensor.');
         return sensor.currentValue;
@@ -218,16 +221,16 @@ var Device = (function () {
             throw new Error('Device has no suitable sensor.');
         sensor.sinceTime = sinceTime;
     };
-    Device.prototype.getTotalValue = function (type) {
+    Device.prototype.getTotalValue = function (type, num) {
         //        console.log("getTotalValue");
-        var sensor = this.getSensor(DevoloSensor_1.MeterSensor, type);
+        var sensor = this.getSensor(DevoloSensor_1.MeterSensor, type, num);
         if (!sensor)
             throw new Error('Device has no suitable sensor.');
         return sensor.totalValue;
     };
-    Device.prototype.getSinceTime = function (type) {
+    Device.prototype.getSinceTime = function (type, num) {
         //        console.log("getSinceTime");
-        var sensor = this.getSensor(DevoloSensor_1.MeterSensor, type);
+        var sensor = this.getSensor(DevoloSensor_1.MeterSensor, type, num);
         if (!sensor)
             throw new Error('Device has no suitable sensor.');
         return sensor.sinceTime;
@@ -256,23 +259,23 @@ var Device = (function () {
             throw new Error('Device has no suitable sensor.');
         return sensor.keyCount;
     };
-    Device.prototype.onStateChanged = function (state) {
+    Device.prototype.onStateChanged = function (state, num) {
         var self = this;
         this.setState(state, function (err) {
-            self.events.emit('onStateChanged', state);
+            self.events.emit('onStateChanged', state, num);
         });
     };
     Device.prototype.onValueChanged = function (type, value) {
         this.setValue(type, value);
         this.events.emit('onValueChanged', type, value);
     };
-    Device.prototype.onCurrentValueChanged = function (type, value) {
+    Device.prototype.onCurrentValueChanged = function (type, value, num) {
         this.setCurrentValue(type, value);
-        this.events.emit('onCurrentValueChanged', type, value);
+        this.events.emit('onCurrentValueChanged', type, value, num);
     };
-    Device.prototype.onTotalValueChanged = function (type, value) {
+    Device.prototype.onTotalValueChanged = function (type, value, num) {
         this.setTotalValue(type, value);
-        this.events.emit('onTotalValueChanged', type, value);
+        this.events.emit('onTotalValueChanged', type, value, num);
     };
     Device.prototype.onTargetValueChanged = function (type, value) {
         var self = this;
@@ -280,9 +283,9 @@ var Device = (function () {
             self.events.emit('onTargetValueChanged', type, value);
         });
     };
-    Device.prototype.onSinceTimeChanged = function (type, value) {
+    Device.prototype.onSinceTimeChanged = function (type, value, num) {
         this.setSinceTime(type, value);
-        this.events.emit('onSinceTimeChanged', type, value);
+        this.events.emit('onSinceTimeChanged', type, value, num);
     };
     Device.prototype.onBatteryLevelChanged = function (value) {
         this.setBatteryLevel(value);
@@ -296,14 +299,15 @@ var Device = (function () {
         this.setKeyPressed(value);
         this.events.emit('onKeyPressedChanged', value);
     };
-    Device.prototype.getSensor = function (classs, type) {
+    Device.prototype.getSensor = function (classs, type, num) {
         //console.log("hasSensor..");
         for (var i = 0; i < this.sensors.length; i++) {
             var instance = this.sensors[i].constructor;
             if (instance.name == classs.name) {
                 //        console.log("..true");
                 if (!type || type == this.sensors[i].type)
-                    return this.sensors[i];
+                    if (!num || this.sensors[i].id.indexOf('#' + num) > -1)
+                        return this.sensors[i];
             }
         }
         //console.log("..false");
@@ -431,3 +435,11 @@ var DimmerDevice = (function (_super) {
     return DimmerDevice;
 }(Device));
 exports.DimmerDevice = DimmerDevice;
+var Relay2Device = (function (_super) {
+    __extends(Relay2Device, _super);
+    function Relay2Device() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Relay2Device;
+}(Device));
+exports.Relay2Device = Relay2Device;

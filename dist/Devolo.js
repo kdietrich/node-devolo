@@ -184,6 +184,9 @@ var Devolo = (function () {
                 else if (item.properties.deviceModelUID.indexOf('Dimmer') > -1) {
                     device = new DevoloDevice_1.DimmerDevice();
                 }
+                else if (item.properties.deviceModelUID.indexOf('unk.model.On/Off:Power:Switch') > -1) {
+                    device = new DevoloDevice_1.Relay2Device();
+                }
                 else {
                     console.log('Device', item.properties.deviceModelUID, 'is not supported (yet). Open an issue on github and ask for adding it.');
                     continue;

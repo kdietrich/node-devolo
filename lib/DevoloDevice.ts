@@ -51,20 +51,21 @@ export abstract class Device {
             if(jsonStr.properties.uid) {
                 var sensor = self.getSensorByID(jsonStr.properties.uid);
                 if(sensor) {
+                    var num = parseInt(sensor.id.split("#").pop());
                     if(jsonStr.properties['property.name']==='state') {
-                        self.onStateChanged(jsonStr.properties['property.value.new']);
+                        self.onStateChanged(jsonStr.properties['property.value.new'], num);
                     }
                     else if(jsonStr.properties['property.name']==='currentValue') {
-                        self.onCurrentValueChanged(sensor.type, jsonStr.properties['property.value.new']);
+                        self.onCurrentValueChanged(sensor.type, jsonStr.properties['property.value.new'], num);
                     }
                     else if(jsonStr.properties['property.name']==='totalValue') {
-                        self.onTotalValueChanged(sensor.type, jsonStr.properties['property.value.new']);
+                        self.onTotalValueChanged(sensor.type, jsonStr.properties['property.value.new'], num);
                     }
                     else if(jsonStr.properties['property.name']==='targetValue') {
                         self.onTargetValueChanged(sensor.type, jsonStr.properties['property.value.new']);
                     }
                     else if(jsonStr.properties['property.name']==='sinceTime') {
-                        self.onSinceTimeChanged(sensor.type, jsonStr.properties['property.value.new']);
+                        self.onSinceTimeChanged(sensor.type, jsonStr.properties['property.value.new'], num);
                     }
                     else if(jsonStr.properties['property.name']==='value') {
                         self.onValueChanged(sensor.type, jsonStr.properties['property.value.new']);
@@ -89,29 +90,31 @@ export abstract class Device {
         });
     }
 
-    turnOn(callback: (err?:string) => void) {
+    turnOn(callback: (err?:string) => void, num?: number) {
         if(!this.settings.stateSwitchable) {
             callback('Switching of device is disabled.');
             return;
         }
-        this.setState(1, callback, true);
+        this.setState(1, callback, true, num);
     }
 
-    turnOff(callback: (err:string) => void) {
+    turnOff(callback: (err:string) => void, num?: number) {
 //        console.log("turnoff");
         if(!this.settings.stateSwitchable) {
             callback('Switching of device is disabled.');
             return;
         }
-        this.setState(0, callback, true);
+        this.setState(0, callback, true, num);
     }
 
-    setState(state: number, callback: (err:string) => void, useAPI: boolean=false) {
+    setState(state: number, callback: (err:string) => void, useAPI: boolean=false, num?: number) {
 //        console.log("setState");
         var sendViaAPI: boolean = useAPI;
-        var sensor: BinarySensor = this.getSensor(BinarySwitch) as BinarySensor;
+        if(!num)
+            num = null;
+        var sensor: BinarySensor = this.getSensor(BinarySwitch, null, num) as BinarySensor;
         if(!sensor) {
-            sensor = this.getSensor(BinarySensor) as BinarySensor;
+            sensor = this.getSensor(BinarySensor, null, num) as BinarySensor;
             if(!sensor) {
                 callback('Device has no suitable sensor.'); return;
             }
@@ -137,11 +140,11 @@ export abstract class Device {
         }
     }
 
-    getState() : number {
+    getState(num?: number) : number {
 //        console.log("getState");
-        var sensor: BinarySensor = this.getSensor(BinarySwitch) as BinarySensor;
+        var sensor: BinarySensor = this.getSensor(BinarySwitch, null, num) as BinarySensor;
         if(!sensor) {
-            sensor = this.getSensor(BinarySensor) as BinarySensor;
+            sensor = this.getSensor(BinarySensor, null, num) as BinarySensor;
             if(!sensor)
                 throw new Error('Device has no suitable sensor.');
         }
@@ -206,9 +209,9 @@ export abstract class Device {
         }
     }
 
-    getCurrentValue(type:string) : number {
+    getCurrentValue(type:string, num?:number) : number {
 //        console.log("getCurrentValue");
-        var sensor: MeterSensor = this.getSensor(MeterSensor, type) as MeterSensor;
+        var sensor: MeterSensor = this.getSensor(MeterSensor, type, num) as MeterSensor;
         if(!sensor)
             throw new Error('Device has no suitable sensor.');
         return sensor.currentValue;
@@ -235,17 +238,17 @@ export abstract class Device {
         sensor.sinceTime = sinceTime;
     }
 
-    getTotalValue(type:string) : number {
+    getTotalValue(type:string, num?:number) : number {
 //        console.log("getTotalValue");
-        var sensor: MeterSensor = this.getSensor(MeterSensor, type) as MeterSensor;
+        var sensor: MeterSensor = this.getSensor(MeterSensor, type, num) as MeterSensor;
         if(!sensor)
             throw new Error('Device has no suitable sensor.');
         return sensor.totalValue;
     }
 
-    getSinceTime(type:string) : number {
+    getSinceTime(type:string, num?:number) : number {
 //        console.log("getSinceTime");
-        var sensor: MeterSensor = this.getSensor(MeterSensor, type) as MeterSensor;
+        var sensor: MeterSensor = this.getSensor(MeterSensor, type, num) as MeterSensor;
         if(!sensor)
             throw new Error('Device has no suitable sensor.');
         return sensor.sinceTime;
@@ -281,10 +284,10 @@ export abstract class Device {
         return sensor.keyCount;
     }
 
-    onStateChanged(state: number) : void {
+    onStateChanged(state: number, num: number) : void {
         var self = this;
         this.setState(state, function(err) {
-            self.events.emit('onStateChanged', state);
+            self.events.emit('onStateChanged', state, num);
         });
     }
 
@@ -293,14 +296,14 @@ export abstract class Device {
         this.events.emit('onValueChanged', type, value);
     }
 
-    onCurrentValueChanged(type: string, value: number) : void {
+    onCurrentValueChanged(type: string, value: number, num: number) : void {
         this.setCurrentValue(type, value);
-        this.events.emit('onCurrentValueChanged', type, value);
+        this.events.emit('onCurrentValueChanged', type, value, num);
     }
 
-    onTotalValueChanged(type: string, value: number) : void {
+    onTotalValueChanged(type: string, value: number, num: number) : void {
         this.setTotalValue(type, value);
-        this.events.emit('onTotalValueChanged', type, value);
+        this.events.emit('onTotalValueChanged', type, value, num);
     }
 
     onTargetValueChanged(type: string, value: number) : void {
@@ -310,9 +313,9 @@ export abstract class Device {
         });
     }
 
-    onSinceTimeChanged(type: string, value: number) : void {
+    onSinceTimeChanged(type: string, value: number, num: number) : void {
         this.setSinceTime(type, value);
-        this.events.emit('onSinceTimeChanged', type, value);
+        this.events.emit('onSinceTimeChanged', type, value, num);
     }
 
     onBatteryLevelChanged(value: number) : void {
@@ -330,14 +333,15 @@ export abstract class Device {
         this.events.emit('onKeyPressedChanged', value);
     }
 
-    private getSensor(classs: any, type?: string) : Sensor {
+    private getSensor(classs: any, type?: string, num?: number) : Sensor {
         //console.log("hasSensor..");
         for(var i=0; i<this.sensors.length; i++) {
             let instance: any = this.sensors[i].constructor;
             if(instance.name == classs.name) {
         //        console.log("..true");
                 if(!type || type == this.sensors[i].type)
-                    return this.sensors[i];
+                    if(!num || this.sensors[i].id.indexOf('#'+num)>-1)
+                        return this.sensors[i];
             }
         }
         //console.log("..false");
@@ -367,3 +371,4 @@ export class RemoteControlDevice extends Device { }
 export class SirenDevice extends Device { }
 export class RelayDevice extends Device { }
 export class DimmerDevice extends Device { }
+export class Relay2Device extends Device { }

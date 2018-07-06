@@ -1,6 +1,6 @@
 import { DevoloOptions, Zone, Rule, Scene } from './DevoloMisc';
 import { DevoloAPI } from './DevoloApi';
-import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, ThermostatValveDevice, SmokeDetectorDevice, RoomThermostatDevice, ShutterDevice, WallSwitchDevice, RemoteControlDevice, SirenDevice, RelayDevice, DimmerDevice } from './DevoloDevice';
+import { Device, DeviceSettings, SwitchMeterDevice, DoorWindowDevice, HumidityDevice, FloodDevice, MotionDevice, ThermostatValveDevice, SmokeDetectorDevice, RoomThermostatDevice, ShutterDevice, WallSwitchDevice, RemoteControlDevice, SirenDevice, RelayDevice, DimmerDevice, Relay2Device } from './DevoloDevice';
 import { Sensor, BinarySensor, MultiLevelSensor, MeterSensor, BinarySwitch, MultiLevelSwitch, RemoteControl } from './DevoloSensor';
 
 export class Devolo {
@@ -181,6 +181,9 @@ export class Devolo {
                 }
                 else if(item.properties.deviceModelUID.indexOf('Dimmer') > -1) {
                     device = new DimmerDevice();
+                }
+                else if(item.properties.deviceModelUID.indexOf('unk.model.On/Off:Power:Switch') > -1) {
+                    device = new Relay2Device();
                 }
                 else {
                     console.log('Device', item.properties.deviceModelUID, 'is not supported (yet). Open an issue on github and ask for adding it.');
