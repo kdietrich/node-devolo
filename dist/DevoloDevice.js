@@ -20,6 +20,7 @@ exports.DeviceSettings = DeviceSettings;
 var Device = (function () {
     function Device() {
         this.events = new events_1.EventEmitter();
+        this.switchCount = 0;
     }
     Device.prototype.setParams = function (id, name, model, icon, zoneId, zone, batteryLevel, batteryLow, lastActivity, sensors, settings) {
         this.id = id;
@@ -43,6 +44,8 @@ var Device = (function () {
                 var sensor = self.getSensorByID(jsonStr.properties.uid);
                 if (sensor) {
                     var num = parseInt(sensor.id.split("#").pop());
+                    if (!num)
+                        num = 1;
                     if (jsonStr.properties['property.name'] === 'state') {
                         self.onStateChanged(jsonStr.properties['property.value.new'], num);
                     }
@@ -306,7 +309,7 @@ var Device = (function () {
             if (instance.name == classs.name) {
                 //        console.log("..true");
                 if (!type || type == this.sensors[i].type)
-                    if (!num || this.sensors[i].id.indexOf('#' + num) > -1)
+                    if (!num || this.switchCount == 1 || this.sensors[i].id.indexOf('#' + num) > -1)
                         return this.sensors[i];
             }
         }

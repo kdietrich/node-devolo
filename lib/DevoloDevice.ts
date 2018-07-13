@@ -25,6 +25,7 @@ export abstract class Device {
     sensors: Sensor[];
     settings: DeviceSettings;
     events: EventEmitter = new EventEmitter();
+    switchCount: number = 0;
 
     setParams(id: string, name: string, model: string, icon: string, zoneId: string, zone: string, batteryLevel: number, batteryLow: boolean, lastActivity: number, sensors: Sensor[], settings: DeviceSettings) {
         this.id = id;
@@ -52,6 +53,8 @@ export abstract class Device {
                 var sensor = self.getSensorByID(jsonStr.properties.uid);
                 if(sensor) {
                     var num = parseInt(sensor.id.split("#").pop());
+                    if(!num)
+                        num = 1;
                     if(jsonStr.properties['property.name']==='state') {
                         self.onStateChanged(jsonStr.properties['property.value.new'], num);
                     }
@@ -340,7 +343,7 @@ export abstract class Device {
             if(instance.name == classs.name) {
         //        console.log("..true");
                 if(!type || type == this.sensors[i].type)
-                    if(!num || this.sensors[i].id.indexOf('#'+num)>-1)
+                    if(!num || this.switchCount==1 || this.sensors[i].id.indexOf('#'+num)>-1)
                         return this.sensors[i];
             }
         }

@@ -270,6 +270,7 @@ export class Devolo {
                                     item2.properties.state,
                                     item2.properties.targetState
                                 ));
+                                device.switchCount++;
                             }
                             else if(item2.UID.indexOf('MultiLevelSensor') > -1 || item2.UID.indexOf('HumidityBarZone') > -1 || item2.UID.indexOf('DewpointSensor') > -1 || item2.UID.indexOf('HumidityBarValue') > -1) {
                                 device.sensors.push(new MultiLevelSensor(
