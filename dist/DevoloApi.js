@@ -238,6 +238,7 @@ var DevoloAPI = (function () {
             self._wsMessageEvents.emit('message', jsonStr);
         });
         this._ws.on('error', function () {
+            self.stopHeartbeatHandler();
             console.log('Could not connect to socket. Retrying..');
             callback('Could not connect to socket. Retrying..');
             self._ws.terminate();
@@ -255,14 +256,12 @@ var DevoloAPI = (function () {
         });
         setTimeout(function () {
             console.log('Force closing socket after 25 minutes. Trying to reconnect...');
-            clearInterval(this._interval);
             self.reconnect();
         }, 1500000);
         clearInterval(this._interval);
         this._interval = setInterval(function ping() {
             if (self._ws && !self._wsConnected) {
                 console.log('Connection to socket lost. Trying to reconnect...');
-                clearInterval(this._interval);
                 self.reconnect();
                 return;
             }
@@ -271,7 +270,12 @@ var DevoloAPI = (function () {
         }, 10000);
     };
     ;
+    DevoloAPI.prototype.stopHeartbeatHandler = function () {
+        clearInterval(this._interval);
+    };
+    ;
     DevoloAPI.prototype.reconnect = function () {
+        this.stopHeartbeatHandler();
         console.log('Reconnecting...');
         this._ws.terminate();
         this.connect(function (err) { });
