@@ -160,6 +160,11 @@ var Devolo = (function () {
                 else if (item.properties.deviceModelUID.indexOf('Thermostat:Valve') > -1) {
                     device = new DevoloDevice_1.ThermostatValveDevice();
                 }
+                //to support Danfoss Living Connect ThermostatValve Z v1.06 014G0013 that can't be identified by deviceModelUID: 'devolo.model.Unknown:Device',
+                //see http://products.z-wavealliance.org/products/1507/pics
+                else if (item.properties.prodID == '0x0004' && item.properties.prodTypeID == '0x0005'){
+                    device = new DevoloDevice_1.ThermostatValveDevice();
+                }
                 else if (item.properties.deviceModelUID.indexOf('Smoke:Detector') > -1) {
                     device = new DevoloDevice_1.SmokeDetectorDevice();
                 }
