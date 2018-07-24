@@ -43,13 +43,15 @@ var Devolo = (function () {
                 callback(err);
                 return;
             }
-            self._options.uuid = uuid;
+            if (!self._options.uuid)
+                self._options.uuid = uuid;
             self._api.fetchGateway(function (err, gateway) {
                 if (err) {
                     callback(err);
                     return;
                 }
-                self._options.gateway = gateway;
+                if (!self._options.gateway)
+                    self._options.gateway = gateway;
                 self._api.fetchPasskey(function (err, passkey) {
                     if (err) {
                         callback(err);
