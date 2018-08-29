@@ -21,6 +21,7 @@ var Device = (function () {
     function Device() {
         this.events = new events_1.EventEmitter();
         this.switchCount = 0;
+        this.isListening = false;
     }
     Device.prototype.setParams = function (id, name, model, icon, zoneId, zone, batteryLevel, batteryLow, lastActivity, sensors, settings) {
         this.id = id;
@@ -37,6 +38,8 @@ var Device = (function () {
     };
     Device.prototype.listen = function () {
         var self = this;
+        if (self.isListening)
+            return;
         var api = DevoloApi_1.DevoloAPI.getInstance();
         api._wsMessageEvents.on('message', function (jsonStr) {
             //api._ws.on('message', function(message) {
@@ -80,6 +83,7 @@ var Device = (function () {
                 }
             }
         });
+        self.isListening = true;
     };
     Device.prototype.turnOn = function (callback, num) {
         if (!this.settings.stateSwitchable) {

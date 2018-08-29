@@ -26,6 +26,7 @@ export abstract class Device {
     settings: DeviceSettings;
     events: EventEmitter = new EventEmitter();
     switchCount: number = 0;
+    isListening: boolean = false;
 
     setParams(id: string, name: string, model: string, icon: string, zoneId: string, zone: string, batteryLevel: number, batteryLow: boolean, lastActivity: number, sensors: Sensor[], settings: DeviceSettings) {
         this.id = id;
@@ -43,6 +44,9 @@ export abstract class Device {
 
     listen() : void {
         var self = this;
+
+        if(self.isListening)
+            return;
 
         var api:DevoloAPI = DevoloAPI.getInstance();
         api._wsMessageEvents.on('message', function(jsonStr) {
@@ -91,6 +95,7 @@ export abstract class Device {
                 }
             }
         });
+        self.isListening = true;
     }
 
     turnOn(callback: (err?:string) => void, num?: number) {
