@@ -1,8 +1,9 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var DevoloApi_1 = require("./DevoloApi");
 var events_1 = require("events");
 events_1.EventEmitter.defaultMaxListeners = 100;
-var Zone = (function () {
+var Zone = /** @class */ (function () {
     function Zone(id, name, devices) {
         this.id = id;
         this.name = name;
@@ -11,7 +12,7 @@ var Zone = (function () {
     return Zone;
 }());
 exports.Zone = Zone;
-var Rule = (function () {
+var Rule = /** @class */ (function () {
     function Rule() {
         this.events = new events_1.EventEmitter();
     }
@@ -30,6 +31,7 @@ var Rule = (function () {
                     self.onEnabledChanged(jsonStr.properties['property.value.new']);
                 }
                 else {
+                    //console.log('COULDNT FIND RULE PROPERTY:', jsonStr.properties['property.name']);
                 }
             }
         });
@@ -50,7 +52,7 @@ var Rule = (function () {
     return Rule;
 }());
 exports.Rule = Rule;
-var Scene = (function () {
+var Scene = /** @class */ (function () {
     function Scene() {
     }
     Scene.prototype.setParams = function (id, name, description) {

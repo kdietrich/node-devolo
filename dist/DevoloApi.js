@@ -1,7 +1,8 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var WebSocket = require('ws');
 var events_1 = require("events");
-var DevoloAPI = (function () {
+var DevoloAPI = /** @class */ (function () {
     function DevoloAPI() {
         this._apiHost = 'www.mydevolo.com';
         this._apiVersion = '/v1';
@@ -281,8 +282,8 @@ var DevoloAPI = (function () {
         this.connect(function (err) { });
     };
     ;
+    DevoloAPI._instance = new DevoloAPI();
     return DevoloAPI;
 }());
-DevoloAPI._instance = new DevoloAPI();
 exports.DevoloAPI = DevoloAPI;
 ;

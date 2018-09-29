@@ -160,11 +160,6 @@ export class Devolo {
                 else if(item.properties.deviceModelUID.indexOf('Thermostat:Valve') > -1) {
                     device = new ThermostatValveDevice();
                 }
-                //to support Danfoss Living Connect ThermostatValve Z v1.06 014G0013 that can't be identified by deviceModelUID: 'devolo.model.Unknown:Device',
-                //see http://products.z-wavealliance.org/products/1507/pics
-                else if (item.properties.prodID == '0x0004' && item.properties.prodTypeID == '0x0005') {
-                    device = new ThermostatValveDevice();
-                }
                 else if(item.properties.deviceModelUID.indexOf('Smoke:Detector') > -1) {
                     device = new SmokeDetectorDevice();
                 }
@@ -189,11 +184,47 @@ export class Devolo {
                 else if(item.properties.deviceModelUID.indexOf('Dimmer') > -1) {
                     device = new DimmerDevice();
                 }
-                else if(item.properties.deviceModelUID.indexOf('unk.model.On/Off:Power:Switch') > -1) {
-                    device = new Relay2Device();
+                // Qubino Flush [1|2|1D] Relay | https://products.z-wavealliance.org/regions/1/categories/16/products?company=331
+                else if((item.properties.deviceModelUID.indexOf('unk.model.On/Off:Power:Switch') > -1) && (
+                            (item.properties.prodID == '0x0052' && item.properties.prodTypeID == '0x0002') ||    // Qubino Flush 1 Relay
+                            (item.properties.prodID == '0x0051' && item.properties.prodTypeID == '0x0002') ||    // Qubino Flush 2 Relay
+                            (item.properties.prodID == '0x0053' && item.properties.prodTypeID == '0x0002'))) {   // Qubino Flush 1D Relay
+                                device = new Relay2Device(); 
+                }
+                // Fibaro 2nd Gen | https://products.z-wavealliance.org/regions/1/categories/16/products?company=171
+                else if((item.properties.deviceModelUID.indexOf('unk.model.On/Off:Power:Switch') > -1) && (
+                            (item.properties.prodID == '0x1000' && item.properties.prodTypeID == '0x0403') ||    // Fibaro FGS-213 2nd Gen (1x)
+                            (item.properties.prodID == '0x1000' && item.properties.prodTypeID == '0x0203'))) {   // Fibaro FGS-223 2nd Gen (2x)
+                                device = new Relay2Device();
+                }
+                // Fibaro 1st Gen | https://products.z-wavealliance.org/regions/1/categories/16/products?company=171
+                else if(((item.properties.deviceModelUID.indexOf('devolo.model.Unknown:Device') > -1) || 
+                         (item.properties.deviceModelUID.indexOf('unk.model.Unknown:Device') > -1)) && (
+                            (item.properties.prodID == '0x0103' && item.properties.prodTypeID == '0x0400') ||    // Fibaro FGS-211 1st Gen (1x)
+                            (item.properties.prodID == '0x0109' && item.properties.prodTypeID == '0x0400') ||    // Fibaro FGS-211 1st Gen (1x)
+                            (item.properties.prodID == '0x100a' && item.properties.prodTypeID == '0x0400') ||    // Fibaro FGS-212 1st Gen (1x)
+                            (item.properties.prodID == '0x1002' && item.properties.prodTypeID == '0x0402') ||    // Fibaro FGS-212 1st Gen (1x)
+                            (item.properties.prodID == '0x0103' && item.properties.prodTypeID == '0x0200') ||    // Fibaro FGS-221 1st Gen (2x)
+                            (item.properties.prodID == '0x0109' && item.properties.prodTypeID == '0x0200') ||    // Fibaro FGS-221 1st Gen (2x)
+                            (item.properties.prodID == '0x100a' && item.properties.prodTypeID == '0x0200') ||    // Fibaro FGS-222 1st Gen (2x)
+                            (item.properties.prodID == '0x1002' && item.properties.prodTypeID == '0x0202'))) {   // Fibaro FGS-222 1st Gen (2x)
+                                device = new Relay2Device();
+                }
+                // Danfoss thermostat valve / radiator thermostat | https://products.z-wavealliance.org/regions/1/categories/10/products?company=3
+                else if((item.properties.deviceModelUID.indexOf('devolo.model.Unknown:Device') > -1) && (
+                            (item.properties.prodID == '0x0004' && item.properties.prodTypeID == '0x0005') ||
+                            (item.properties.prodID == '0x0003' && item.properties.prodTypeID == '0x0005') ||
+                            (item.properties.prodID == '0xA010' && item.properties.prodTypeID == '0x0248') ||
+                            (item.properties.prodID == '0x0001' && item.properties.prodTypeID == '0x8005'))) {
+                                device = new ThermostatValveDevice();
+                }
+                // Aeotec Siren Gen5 (ZW080-C15) | https://products.z-wavealliance.org/products/1136
+                else if((item.properties.deviceModelUID.indexOf('devolo.model.Unknown:Device') > -1) && (
+                            (item.properties.prodID == '0x0050' && item.properties.prodTypeID == '0x0004'))) {
+                                device = new SirenDevice();
                 }
                 else {
-                    console.log('Device', item.properties.deviceModelUID, 'is not supported (yet). Open an issue on github and ask for adding it.');
+                    console.log('Device > %s < is not supported (yet) or devolo has something changed. Open an issue on github and ask for adding it.\n> Model: %s\n> ProductID: %s\n> ProductTypeID: %s\n> Sensors: %s\n', item.properties.itemName, item.properties.deviceModelUID, item.properties.prodID, item.properties.prodTypeID, item.properties.elementUIDs);
                     continue;
                 }
 
