@@ -191,12 +191,19 @@ var Devolo = /** @class */ (function () {
                 else if ((item.properties.deviceModelUID.indexOf('unk.model.On/Off:Power:Switch') > -1) && ((item.properties.prodID == '0x0052' && item.properties.prodTypeID == '0x0002') || // Qubino Flush 1 Relay
                     (item.properties.prodID == '0x0051' && item.properties.prodTypeID == '0x0002') || // Qubino Flush 2 Relay
                     (item.properties.prodID == '0x0053' && item.properties.prodTypeID == '0x0002'))) { // Qubino Flush 1D Relay
-                    device = new DevoloDevice_1.Relay2Device();
+                    device = new DevoloDevice_1.RelaySwitchXDevice();
                 }
                 // Fibaro 2nd Gen | https://products.z-wavealliance.org/regions/1/categories/16/products?company=171
                 else if ((item.properties.deviceModelUID.indexOf('unk.model.On/Off:Power:Switch') > -1) && ((item.properties.prodID == '0x1000' && item.properties.prodTypeID == '0x0403') || // Fibaro FGS-213 2nd Gen (1x)
                     (item.properties.prodID == '0x1000' && item.properties.prodTypeID == '0x0203'))) { // Fibaro FGS-223 2nd Gen (2x)
-                    device = new DevoloDevice_1.Relay2Device();
+                    device = new DevoloDevice_1.RelaySwitchXDevice();
+                }
+                // Fibaro Wall Plug | https://products.z-wavealliance.org/regions/1/categories/16/products?company=171
+                else if ((item.properties.deviceModelUID.indexOf('unk.model.On/Off:Power:Switch') > -1) && ((item.properties.prodID == '0x1000' && item.properties.prodTypeID == '0x0600') || // Fibaro FGWPE/F-101
+                    (item.properties.prodID == '0x1001' && item.properties.prodTypeID == '0x0602') || // Fibaro FGWPE/F-102
+                    (item.properties.prodID == '0x1003' && item.properties.prodTypeID == '0x0602') || // Fibaro FGWPE/F-102
+                    (item.properties.prodID == '0x1000' && item.properties.prodTypeID == '0x1801'))) { // Fibaro FGWPG-111
+                    device = new DevoloDevice_1.RelaySwitchXDevice();
                 }
                 // Fibaro 1st Gen | https://products.z-wavealliance.org/regions/1/categories/16/products?company=171
                 else if (((item.properties.deviceModelUID.indexOf('devolo.model.Unknown:Device') > -1) ||
@@ -208,7 +215,7 @@ var Devolo = /** @class */ (function () {
                     (item.properties.prodID == '0x0109' && item.properties.prodTypeID == '0x0200') || // Fibaro FGS-221 1st Gen (2x)
                     (item.properties.prodID == '0x100a' && item.properties.prodTypeID == '0x0200') || // Fibaro FGS-222 1st Gen (2x)
                     (item.properties.prodID == '0x1002' && item.properties.prodTypeID == '0x0202'))) { // Fibaro FGS-222 1st Gen (2x)
-                    device = new DevoloDevice_1.Relay2Device();
+                    device = new DevoloDevice_1.RelaySwitchXDevice();
                 }
                 // Danfoss thermostat valve / radiator thermostat | https://products.z-wavealliance.org/regions/1/categories/10/products?company=3
                 else if ((item.properties.deviceModelUID.indexOf('devolo.model.Unknown:Device') > -1) && ((item.properties.prodID == '0x0004' && item.properties.prodTypeID == '0x0005') ||

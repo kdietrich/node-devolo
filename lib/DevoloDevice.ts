@@ -379,4 +379,4 @@ export class RemoteControlDevice extends Device { }
 export class SirenDevice extends Device { }
 export class RelayDevice extends Device { }
 export class DimmerDevice extends Device { }
-export class Relay2Device extends Device { }
+export class RelaySwitchXDevice extends Device { }

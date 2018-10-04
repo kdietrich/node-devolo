@@ -450,11 +450,11 @@ var DimmerDevice = /** @class */ (function (_super) {
     return DimmerDevice;
 }(Device));
 exports.DimmerDevice = DimmerDevice;
-var Relay2Device = /** @class */ (function (_super) {
-    __extends(Relay2Device, _super);
-    function Relay2Device() {
+var RelaySwitchXDevice = /** @class */ (function (_super) {
+    __extends(RelaySwitchXDevice, _super);
+    function RelaySwitchXDevice() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    return Relay2Device;
+    return RelaySwitchXDevice;
 }(Device));
-exports.Relay2Device = Relay2Device;
+exports.RelaySwitchXDevice = RelaySwitchXDevice;
