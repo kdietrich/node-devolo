@@ -278,7 +278,7 @@ var Device = /** @class */ (function () {
         var self = this;
         this.setState(state, function (err) {
             self.events.emit('onStateChanged', state, num);
-        });
+        }, false, num);
     };
     Device.prototype.onValueChanged = function (type, value) {
         this.setValue(type, value);

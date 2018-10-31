@@ -1,7 +1,9 @@
+[![GitHub last commit](https://img.shields.io/github/last-commit/kdietrich/node-devolo.svg)](https://github.com/kdietrich/node-devolo)
+
 # node-devolo
 
 ## Devolo Home Control (reverse-engineered)
-(C) 2017, Kevin Dietrich
+(C) 2017-2018, Kevin Dietrich
 
 Control your favorite home control devices via this Node.js API.
 

@@ -296,7 +296,7 @@ export abstract class Device {
         var self = this;
         this.setState(state, function(err) {
             self.events.emit('onStateChanged', state, num);
-        });
+        }, false, num);
     }
 
     onValueChanged(type: string, value: number) : void {
