@@ -72,9 +72,6 @@ var DevoloAPI = /** @class */ (function () {
                     callback(err);
                 }
             });
-            res.on('close', function (err) {
-                callback(err);
-            });
         });
         req.setTimeout(10000, function () {
             req.connection.destroy();
