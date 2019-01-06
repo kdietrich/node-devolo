@@ -458,3 +458,11 @@ var RelaySwitchXDevice = /** @class */ (function (_super) {
     return RelaySwitchXDevice;
 }(Device));
 exports.RelaySwitchXDevice = RelaySwitchXDevice;
+var ZWeatherDevice = /** @class */ (function (_super) {
+    __extends(ZWeatherDevice, _super);
+    function ZWeatherDevice() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ZWeatherDevice;
+}(Device));
+exports.ZWeatherDevice = ZWeatherDevice;

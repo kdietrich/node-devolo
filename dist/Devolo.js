@@ -229,6 +229,10 @@ var Devolo = /** @class */ (function () {
                 else if ((item.properties.deviceModelUID.indexOf('devolo.model.Unknown:Device') > -1) && ((item.properties.prodID == '0x0050' && item.properties.prodTypeID == '0x0004'))) {
                     device = new DevoloDevice_1.SirenDevice();
                 }
+                // Popp Z-Weather | https://products.z-wavealliance.org/products/2102
+                else if ((item.properties.deviceModelUID.indexOf('devolo.model.Unknown:Type:Device') > -1) && ((item.properties.prodID == '0x0400' && item.properties.prodTypeID == '0x0100'))) {
+                    device = new DevoloDevice_1.ZWeatherDevice();
+                }
                 else {
                     console.log('Device > %s < is not supported (yet) or devolo has something changed. Open an issue on github and ask for adding it.\n> Model: %s\n> ProductID: %s\n> ProductTypeID: %s\n> Sensors: %s\n', item.properties.itemName, item.properties.deviceModelUID, item.properties.prodID, item.properties.prodTypeID, item.properties.elementUIDs);
                     continue;

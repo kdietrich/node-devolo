@@ -380,3 +380,4 @@ export class SirenDevice extends Device { }
 export class RelayDevice extends Device { }
 export class DimmerDevice extends Device { }
 export class RelaySwitchXDevice extends Device { }
+export class ZWeatherDevice extends Device { }
