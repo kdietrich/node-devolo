@@ -286,7 +286,6 @@ var Devolo = /** @class */ (function () {
                             }
                             else if (item2.UID.indexOf('BinarySwitch') > -1) {
                                 device.sensors.push(new DevoloSensor_1.BinarySwitch(item2.UID, item2.properties.sensorType, item2.properties.state, item2.properties.targetState));
-                                device.switchCount++;
                             }
                             else if (item2.UID.indexOf('MultiLevelSensor') > -1 || item2.UID.indexOf('HumidityBarZone') > -1 || item2.UID.indexOf('DewpointSensor') > -1 || item2.UID.indexOf('HumidityBarValue') > -1) {
                                 device.sensors.push(new DevoloSensor_1.MultiLevelSensor(item2.UID, item2.properties.sensorType, item2.properties.value));

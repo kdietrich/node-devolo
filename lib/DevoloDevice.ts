@@ -25,7 +25,6 @@ export abstract class Device {
     sensors: Sensor[];
     settings: DeviceSettings;
     events: EventEmitter = new EventEmitter();
-    switchCount: number = 0;
     isListening: boolean = false;
 
     setParams(id: string, name: string, model: string, icon: string, zoneId: string, zone: string, batteryLevel: number, batteryLow: boolean, lastActivity: number, sensors: Sensor[], settings: DeviceSettings) {
@@ -122,11 +121,18 @@ export abstract class Device {
             num = null;
         var sensor: BinarySensor = this.getSensor(BinarySwitch, null, num) as BinarySensor;
         if(!sensor) {
-            sensor = this.getSensor(BinarySensor, null, num) as BinarySensor;
+            sensor = this.getSensor(BinarySwitch, null, null) as BinarySensor;
             if(!sensor) {
-                callback('Device has no suitable sensor.'); return;
+                sensor = this.getSensor(BinarySensor, null, num) as BinarySensor;
+                if(!sensor) {
+                    sensor = this.getSensor(BinarySensor, null, null) as BinarySensor;
+                    if(!sensor) {
+                        //console.log('Device has no suitable sensor.')
+                        callback('Device has no suitable sensor.'); return;
+                    }
+                }
+                sendViaAPI = false;
             }
-            sendViaAPI = false;
         }
         if(sensor.state === state) {
             callback(null); return;
@@ -348,7 +354,7 @@ export abstract class Device {
             if(instance.name == classs.name) {
         //        console.log("..true");
                 if(!type || type == this.sensors[i].type)
-                    if(!num || this.switchCount==1 || this.sensors[i].id.indexOf('#'+num)>-1)
+                    if(!num || this.sensors[i].id.indexOf('#'+num)>-1)
                         return this.sensors[i];
             }
         }

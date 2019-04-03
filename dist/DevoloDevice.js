@@ -1,8 +1,11 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -26,7 +29,6 @@ exports.DeviceSettings = DeviceSettings;
 var Device = /** @class */ (function () {
     function Device() {
         this.events = new events_1.EventEmitter();
-        this.switchCount = 0;
         this.isListening = false;
     }
     Device.prototype.setParams = function (id, name, model, icon, zoneId, zone, batteryLevel, batteryLow, lastActivity, sensors, settings) {
@@ -116,12 +118,19 @@ var Device = /** @class */ (function () {
             num = null;
         var sensor = this.getSensor(DevoloSensor_1.BinarySwitch, null, num);
         if (!sensor) {
-            sensor = this.getSensor(DevoloSensor_1.BinarySensor, null, num);
+            sensor = this.getSensor(DevoloSensor_1.BinarySwitch, null, null);
             if (!sensor) {
-                callback('Device has no suitable sensor.');
-                return;
+                sensor = this.getSensor(DevoloSensor_1.BinarySensor, null, num);
+                if (!sensor) {
+                    sensor = this.getSensor(DevoloSensor_1.BinarySensor, null, null);
+                    if (!sensor) {
+                        //console.log('Device has no suitable sensor.')
+                        callback('Device has no suitable sensor.');
+                        return;
+                    }
+                }
+                sendViaAPI = false;
             }
-            sendViaAPI = false;
         }
         if (sensor.state === state) {
             callback(null);
@@ -321,7 +330,7 @@ var Device = /** @class */ (function () {
             if (instance.name == classs.name) {
                 //        console.log("..true");
                 if (!type || type == this.sensors[i].type)
-                    if (!num || this.switchCount == 1 || this.sensors[i].id.indexOf('#' + num) > -1)
+                    if (!num || this.sensors[i].id.indexOf('#' + num) > -1)
                         return this.sensors[i];
             }
         }

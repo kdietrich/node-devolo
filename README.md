@@ -3,7 +3,7 @@
 # node-devolo
 
 ## Devolo Home Control (reverse-engineered)
-(C) 2017-2018, Kevin Dietrich
+(C) 2017-2019, Kevin Dietrich
 
 Control your favorite home control devices via this Node.js API.
 
