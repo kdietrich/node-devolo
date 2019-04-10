@@ -1,11 +1,8 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -29,6 +26,7 @@ exports.DeviceSettings = DeviceSettings;
 var Device = /** @class */ (function () {
     function Device() {
         this.events = new events_1.EventEmitter();
+        this.switchCount = 0;
         this.isListening = false;
     }
     Device.prototype.setParams = function (id, name, model, icon, zoneId, zone, batteryLevel, batteryLow, lastActivity, sensors, settings) {
@@ -330,7 +328,7 @@ var Device = /** @class */ (function () {
             if (instance.name == classs.name) {
                 //        console.log("..true");
                 if (!type || type == this.sensors[i].type)
-                    if (!num || this.sensors[i].id.indexOf('#' + num) > -1)
+                    if (!num || this.switchCount == 1 || this.sensors[i].id.indexOf('#' + num) > -1)
                         return this.sensors[i];
             }
         }

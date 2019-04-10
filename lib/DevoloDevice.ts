@@ -25,6 +25,7 @@ export abstract class Device {
     sensors: Sensor[];
     settings: DeviceSettings;
     events: EventEmitter = new EventEmitter();
+    switchCount: number = 0;
     isListening: boolean = false;
 
     setParams(id: string, name: string, model: string, icon: string, zoneId: string, zone: string, batteryLevel: number, batteryLow: boolean, lastActivity: number, sensors: Sensor[], settings: DeviceSettings) {
@@ -354,7 +355,7 @@ export abstract class Device {
             if(instance.name == classs.name) {
         //        console.log("..true");
                 if(!type || type == this.sensors[i].type)
-                    if(!num || this.sensors[i].id.indexOf('#'+num)>-1)
+                    if(!num || this.switchCount==1 || this.sensors[i].id.indexOf('#'+num)>-1)
                         return this.sensors[i];
             }
         }
