@@ -185,7 +185,8 @@ export class Devolo {
                     device = new DimmerDevice();
                 }
                 // Qubino Flush [1|2|1D] Relay | https://products.z-wavealliance.org/regions/1/categories/16/products?company=331
-                else if((item.properties.deviceModelUID.indexOf('unk.model.On/Off:Power:Switch') > -1) && (
+                else if(((item.properties.deviceModelUID.indexOf('unk.model.On/Off:Power:Switch') > -1) ||
+                         (item.properties.deviceModelUID.indexOf('unk.model.Netichome:D:Module') > -1)) && (
                             (item.properties.prodID == '0x0052' && item.properties.prodTypeID == '0x0002') ||    // Qubino Flush 1 Relay
                             (item.properties.prodID == '0x0051' && item.properties.prodTypeID == '0x0002') ||    // Qubino Flush 2 Relay
                             (item.properties.prodID == '0x0053' && item.properties.prodTypeID == '0x0002'))) {   // Qubino Flush 1D Relay
