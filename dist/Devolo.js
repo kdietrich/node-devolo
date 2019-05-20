@@ -220,7 +220,8 @@ var Devolo = /** @class */ (function () {
                 }
                 // Danfoss thermostat valve / radiator thermostat | https://products.z-wavealliance.org/regions/1/categories/10/products?company=3
                 else if (((item.properties.deviceModelUID.indexOf('devolo.model.Unknown:Device') > -1) ||
-                    (item.properties.deviceModelUID.indexOf('unk.model.Unknown:Device') > -1)) && ((item.properties.prodID == '0x0004' && item.properties.prodTypeID == '0x0005') ||
+                    (item.properties.deviceModelUID.indexOf('unk.model.Unknown:Device') > -1) ||
+                    (item.properties.deviceModelUID.indexOf('unk.model.Danfoss:Thermostat') > -1)) && ((item.properties.prodID == '0x0004' && item.properties.prodTypeID == '0x0005') ||
                     (item.properties.prodID == '0x0003' && item.properties.prodTypeID == '0x0005') ||
                     (item.properties.prodID == '0xA010' && item.properties.prodTypeID == '0x0248') ||
                     (item.properties.prodID == '0x0001' && item.properties.prodTypeID == '0x8005'))) {
