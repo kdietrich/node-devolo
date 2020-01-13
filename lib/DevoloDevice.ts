@@ -89,7 +89,7 @@ export abstract class Device {
                         self.onKeyPressedChanged(jsonStr.properties['property.value.new']);
                     }
                     else {
-                        console.log('COULDNT FIND PROPERTY: %s for sensor type[%s] - new value would be: %s', jsonStr.properties['property.name'], sensor.type, jsonStr.properties['property.value.new']);
+                       // console.log('COULDNT FIND PROPERTY: %s for sensor type[%s] - new value would be: %s', jsonStr.properties['property.name'], sensor.type, jsonStr.properties['property.value.new']);
                     }
                 }
                 else {
