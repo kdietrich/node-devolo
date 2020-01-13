@@ -1,11 +1,8 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -32,9 +29,10 @@ var Device = /** @class */ (function () {
         this.switchCount = 0;
         this.isListening = false;
     }
-    Device.prototype.setParams = function (id, name, model, icon, zoneId, zone, batteryLevel, batteryLow, lastActivity, sensors, settings) {
+    Device.prototype.setParams = function (id, name, manID, model, icon, zoneId, zone, batteryLevel, batteryLow, lastActivity, sensors, settings) {
         this.id = id;
         this.name = name;
+        this.manID = manID;
         this.model = model;
         this.icon = icon;
         this.zoneId = zoneId;
@@ -86,7 +84,7 @@ var Device = /** @class */ (function () {
                         self.onKeyPressedChanged(jsonStr.properties['property.value.new']);
                     }
                     else {
-                        //console.log('COULDNT FIND PROPERTY:', jsonStr.properties['property.name'], sensor.type);
+                        console.log('COULDNT FIND PROPERTY: %s for sensor type[%s] - new value would be: %s', jsonStr.properties['property.name'], sensor.type, jsonStr.properties['property.value.new']);
                     }
                 }
                 else {
