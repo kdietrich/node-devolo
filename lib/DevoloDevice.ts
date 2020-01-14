@@ -15,6 +15,7 @@ export abstract class Device {
 
     id: string;
     name: string;
+    manID: string;
     model: string;
     icon: string;
     zoneId: string;
@@ -28,9 +29,10 @@ export abstract class Device {
     switchCount: number = 0;
     isListening: boolean = false;
 
-    setParams(id: string, name: string, model: string, icon: string, zoneId: string, zone: string, batteryLevel: number, batteryLow: boolean, lastActivity: number, sensors: Sensor[], settings: DeviceSettings) {
+    setParams(id: string, name: string, manID: string, model: string, icon: string, zoneId: string, zone: string, batteryLevel: number, batteryLow: boolean, lastActivity: number, sensors: Sensor[], settings: DeviceSettings) {
         this.id = id;
         this.name = name;
+        this.manID = manID;
         this.model = model;
         this.icon = icon;
         this.zoneId = zoneId;
@@ -87,7 +89,7 @@ export abstract class Device {
                         self.onKeyPressedChanged(jsonStr.properties['property.value.new']);
                     }
                     else {
-                        //console.log('COULDNT FIND PROPERTY:', jsonStr.properties['property.name'], sensor.type);
+                       // console.log('COULDNT FIND PROPERTY: %s for sensor type[%s] - new value would be: %s', jsonStr.properties['property.name'], sensor.type, jsonStr.properties['property.value.new']);
                     }
                 }
                 else {

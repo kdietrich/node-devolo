@@ -254,7 +254,7 @@ var Devolo = /** @class */ (function () {
                 if (item.properties.deviceModelUID.indexOf('Wall:Plug:Switch:and:Meter') > -1) {
                     allElementUIDs.push('ps.' + item.UID);
                 }
-                device.setParams(item.UID, item.properties.itemName, item.properties.deviceModelUID, item.properties.icon, item.properties.zoneId, item.properties.zone, item.properties.batteryLevel, (item.properties.batteryLow == false), null, [], new DevoloDevice_1.DeviceSettings());
+                device.setParams(item.UID, item.properties.itemName, item.properties.manID, item.properties.deviceModelUID, item.properties.icon, item.properties.zoneId, item.properties.zone, item.properties.batteryLevel, (item.properties.batteryLow == false), null, [], new DevoloDevice_1.DeviceSettings());
                 devices.push(device);
             }
             if (allElementUIDs.length == 0) {

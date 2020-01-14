@@ -1,3 +1,4 @@
 node_modules/
 reverse-engineering/
 index.js
+package-lock.json

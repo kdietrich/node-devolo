@@ -266,6 +266,7 @@ export class Devolo {
 
                 device.setParams(item.UID,
                                  item.properties.itemName,
+                                 item.properties.manID,
                                  item.properties.deviceModelUID,
                                  item.properties.icon,
                                  item.properties.zoneId,
