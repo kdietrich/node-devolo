@@ -83,12 +83,17 @@ var Device = /** @class */ (function () {
                     else if (jsonStr.properties['property.name'] === 'keyPressed') {
                         self.onKeyPressedChanged(jsonStr.properties['property.value.new']);
                     }
+                    else if (jsonStr.properties['property.name'] === 'operationStatus') {
+                        //console.log('--> operationStatus %s', JSON.stringify(jsonStr,null,2));
+                        self.onOperationStatusChanged(sensor.type, jsonStr.properties['property.value.new'] ? jsonStr.properties['property.value.new'].status : -1);
+                    }
                     else {
-                        // console.log('COULDNT FIND PROPERTY: %s for sensor type[%s] - new value would be: %s', jsonStr.properties['property.name'], sensor.type, jsonStr.properties['property.value.new']);
+                        //console.log('%s COULDNT FIND PROPERTY: %s for sensor %s (type[%s]) - new value would be: %s',(self.constructor as any).name, jsonStr.properties['property.name'], sensor, sensor.type, jsonStr.properties['property.value.new']);
+                        //console.log('--> RAW JSON %s', JSON.stringify(jsonStr,null,2));
                     }
                 }
                 else {
-                    //console.log('COULDNT FIND SENSOR:', jsonStr.properties.uid);
+                    // console.log('%s COULDNT FIND SENSOR: %s', (self.constructor as any).name, jsonStr.properties.uid);
                 }
             }
         });
@@ -219,6 +224,43 @@ var Device = /** @class */ (function () {
             callback(null);
         }
     };
+    Device.prototype.getOperationStatus = function (type) {
+        console.log("getOperationStatus");
+        var sensor = this.getSensor(DevoloSensor_1.MultiLevelSwitch, type);
+        if (!sensor)
+            throw new Error('Device has no suitable sensor.');
+        return sensor.operationStatus;
+    };
+    Device.prototype.setOperationStatus = function (type, operationStatus, callback, useAPI) {
+        if (useAPI === void 0) { useAPI = false; }
+        console.log("setOperationStatus");
+        var sendViaAPI = useAPI;
+        var sensor = this.getSensor(DevoloSensor_1.MultiLevelSwitch, type);
+        if (!sensor) {
+            callback('Device has no suitable sensor.');
+            return;
+        }
+        if (sensor.operationStatus === operationStatus) {
+            callback(null);
+            return;
+        }
+        if (sendViaAPI) {
+            var operation = 'sendValue';
+            var api = DevoloApi_1.DevoloAPI.getInstance();
+            api.invokeOperation(sensor, operation, function (err) {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+                sensor.operationStatus = operationStatus;
+                callback(null);
+            }, [operationStatus]);
+        }
+        else {
+            sensor.operationStatus = operationStatus;
+            callback(null);
+        }
+    };
     Device.prototype.getCurrentValue = function (type, num) {
         //        console.log("getCurrentValue");
         var sensor = this.getSensor(DevoloSensor_1.MeterSensor, type, num);
@@ -321,6 +363,12 @@ var Device = /** @class */ (function () {
     Device.prototype.onKeyPressedChanged = function (value) {
         this.setKeyPressed(value);
         this.events.emit('onKeyPressedChanged', value);
+    };
+    Device.prototype.onOperationStatusChanged = function (type, value) {
+        var self = this;
+        this.setOperationStatus(type, value, function (err) {
+            self.events.emit('onOperationStatusChanged', type, value);
+        });
     };
     Device.prototype.getSensor = function (classs, type, num) {
         //console.log("hasSensor..");

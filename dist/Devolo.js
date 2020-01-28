@@ -305,7 +305,8 @@ var Devolo = /** @class */ (function () {
                                 device.sensors.push(new DevoloSensor_1.MultiLevelSensor(item2.UID, item2.properties.sensorType, item2.properties.value));
                             }
                             else if (item2.UID.indexOf('MultiLevelSwitch') > -1 || item2.UID.indexOf('Blinds') > -1 || item2.UID.indexOf('Dimmer') > -1) {
-                                device.sensors.push(new DevoloSensor_1.MultiLevelSwitch(item2.UID, item2.properties.switchType, item2.properties.value, item2.properties.targetValue, item2.properties.min, item2.properties.max));
+                                // console.log('-----> Sensor %s  %s', item2.UID, JSON.stringify(item2,null,2));
+                                device.sensors.push(new DevoloSensor_1.MultiLevelSwitch(item2.UID, item2.properties.switchType, item2.properties.value, item2.properties.targetValue, item2.properties.min, item2.properties.max, item2.properties.operationStatus));
                             }
                             else if (item2.UID.indexOf('RemoteControl') > -1) {
                                 device.sensors.push(new DevoloSensor_1.RemoteControl(item2.UID, 'RemoteControl', item2.properties.keyCount, item2.properties.keyPressed));
