@@ -47,11 +47,13 @@ export class MultiLevelSwitch extends MultiLevelSensor {
     targetValue: number;
     min: number;
     max: number;
-    constructor(id: string, type: string, value: number, targetValue: number, min: number, max: number) {
+    operationStatus: number;
+    constructor(id: string, type: string, value: number, targetValue: number, min: number, max: number, operationStatus: number) {
         super(id, type, value);
         this.targetValue = targetValue;
         this.min = min;
         this.max = max;
+        this.operationStatus = operationStatus;
     }
 }
 

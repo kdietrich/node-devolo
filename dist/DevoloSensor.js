@@ -62,11 +62,12 @@ var BinarySwitch = /** @class */ (function (_super) {
 exports.BinarySwitch = BinarySwitch;
 var MultiLevelSwitch = /** @class */ (function (_super) {
     __extends(MultiLevelSwitch, _super);
-    function MultiLevelSwitch(id, type, value, targetValue, min, max) {
+    function MultiLevelSwitch(id, type, value, targetValue, min, max, operationStatus) {
         var _this = _super.call(this, id, type, value) || this;
         _this.targetValue = targetValue;
         _this.min = min;
         _this.max = max;
+        _this.operationStatus = operationStatus;
         return _this;
     }
     return MultiLevelSwitch;
