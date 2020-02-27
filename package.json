@@ -1,6 +1,6 @@
 {
   "name": "node-devolo",
-  "version": "0.1.0",
+  "version": "0.1.0-beturi",
   "description": "Devolo Home Control (reverse-engineered). Control your favorite home control devices via this Node.js API.",
   "author": "Kevin Dietrich",
   "license": "MIT",
