@@ -218,6 +218,10 @@ var Devolo = /** @class */ (function () {
                     (item.properties.prodID == '0x1002' && item.properties.prodTypeID == '0x0202'))) { // Fibaro FGS-222 1st Gen (2x)
                     device = new DevoloDevice_1.RelaySwitchXDevice();
                 }
+                // Everspring On/Off Switch AN158-2 | https://products.z-wavealliance.org/products/213?selectedFrequencyId=-1
+                else if ((item.properties.deviceModelUID.indexOf('unk.model.Unknown:Device') > -1) && ((item.properties.prodID == '0x0002' && item.properties.prodTypeID == '0x0004'))) {
+                    device = new DevoloDevice_1.RelaySwitchXDevice();
+                }
                 // Danfoss thermostat valve / radiator thermostat | https://products.z-wavealliance.org/regions/1/categories/10/products?company=3
                 else if (((item.properties.deviceModelUID.indexOf('devolo.model.Unknown:Device') > -1) ||
                     (item.properties.deviceModelUID.indexOf('unk.model.Unknown:Device') > -1) ||
