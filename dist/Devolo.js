@@ -250,6 +250,14 @@ var Devolo = /** @class */ (function () {
                 else if ((item.properties.deviceModelUID.indexOf('unk.model.Unknown:Device') > -1) && ((item.properties.prodID == '0x1001' && item.properties.prodTypeID == '0x0301'))) {
                     device = new DevoloDevice_1.ShutterDevice();
                 }
+                // Everspring ST-814 | https://github.com/kdietrich/homebridge-devolo/issues/66
+                else if ((item.properties.deviceModelUID.indexOf('unk.model.Unknown:Device') > -1) && ((item.properties.prodID == '0x0001' && item.properties.prodTypeID == '0x0006'))) { // https://products.z-wavealliance.org/products/271
+                    device = new DevoloDevice_1.HumidityDevice();
+                }
+                // Everspring AD-142 | https://github.com/kdietrich/homebridge-devolo/issues/66
+                else if ((item.properties.deviceModelUID.indexOf('unk.model.Unknown:Device') > -1) && ((item.properties.prodID == '0x0001' && item.properties.prodTypeID == '0x0003'))) { // https://products.z-wavealliance.org/products/275
+                    device = new DevoloDevice_1.EverspringDimmerDevice();
+                }
                 else {
                     console.log('Device > %s < is not supported (yet) or devolo has something changed. Open an issue on github and ask for adding it.\n> Model: %s\n> ProductID: %s\n> ProductTypeID: %s\n> Sensors: %s\n', item.properties.itemName, item.properties.deviceModelUID, item.properties.prodID, item.properties.prodTypeID, item.properties.elementUIDs);
                     continue;

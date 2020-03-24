@@ -439,3 +439,4 @@ export class RelayDevice extends Device { }
 export class DimmerDevice extends Device { }
 export class RelaySwitchXDevice extends Device { }
 export class ZWeatherDevice extends Device { }
+export class EverspringDimmerDevice extends Device { }

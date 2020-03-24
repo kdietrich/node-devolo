@@ -525,3 +525,11 @@ var ZWeatherDevice = /** @class */ (function (_super) {
     return ZWeatherDevice;
 }(Device));
 exports.ZWeatherDevice = ZWeatherDevice;
+var EverspringDimmerDevice = /** @class */ (function (_super) {
+    __extends(EverspringDimmerDevice, _super);
+    function EverspringDimmerDevice() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return EverspringDimmerDevice;
+}(Device));
+exports.EverspringDimmerDevice = EverspringDimmerDevice;
