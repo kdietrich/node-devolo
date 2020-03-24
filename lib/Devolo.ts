@@ -264,8 +264,9 @@ export class Devolo {
                             (item.properties.prodID == '0x0001' && item.properties.prodTypeID == '0x0006'))) {    // https://products.z-wavealliance.org/products/271
                                 device = new HumidityDevice();
                 }
-                // Everspring AD-142 | https://github.com/kdietrich/homebridge-devolo/issues/66
+                // Everspring AD-142 & Merten 508619 | https://github.com/kdietrich/homebridge-devolo/issues/66
                 else if((item.properties.deviceModelUID.indexOf('unk.model.Unknown:Device') > -1) && (
+                            (item.properties.prodID == '0x0001' && item.properties.prodTypeID == '0x8002') ||     // https://products.z-wavealliance.org/products/372
                             (item.properties.prodID == '0x0001' && item.properties.prodTypeID == '0x0003'))) {    // https://products.z-wavealliance.org/products/275
                                 device = new EverspringDimmerDevice();
                 }
